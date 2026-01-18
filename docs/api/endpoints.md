@@ -280,6 +280,140 @@ curl "http://localhost:8000/api/v1/calendar/refresh/status"
 | `completed` | Rafraîchissement terminé avec succès |
 | `error` | Erreur lors du rafraîchissement |
 
+### Scoring fondamental
+
+Le module scoring calcule des scores fondamentaux par devise et des biais directionnels par paire, basés sur les événements économiques avec décroissance temporelle.
+
+#### `GET /api/v1/scoring/currency/{currency}`
+
+Calcule le score fondamental d'une devise.
+
+**Paramètres :**
+
+| Paramètre | Type | Description | Requis |
+|-----------|------|-------------|--------|
+| `currency` | path | Code devise (ex: `USD`, `EUR`) | Oui |
+| `half_life_hours` | query | Demi-vie pour la décroissance (heures) | Non (défaut: `48`) |
+| `lookback_days` | query | Jours à analyser | Non (défaut: `7`) |
+
+**Exemple :**
+
+```bash
+curl "http://localhost:8000/api/v1/scoring/currency/EUR"
+
+# Avec paramètres personnalisés
+curl "http://localhost:8000/api/v1/scoring/currency/USD?half_life_hours=24&lookback_days=14"
+```
+
+**Réponse :**
+
+```json
+{
+  "currency": "EUR",
+  "score": 2.7539,
+  "reference_time": "2026-01-18T21:22:09.684849",
+  "config": {
+    "half_life_hours": 48.0,
+    "lookback_days": 7
+  }
+}
+```
+
+**Interprétation du score :**
+
+- Score positif → Sentiment haussier sur la devise
+- Score négatif → Sentiment baissier sur la devise
+- Score proche de 0 → Sentiment neutre
+
+---
+
+#### `GET /api/v1/scoring/pair/{base}/{quote}`
+
+Calcule le biais directionnel d'une paire de devises.
+
+**Paramètres :**
+
+| Paramètre | Type | Description | Requis |
+|-----------|------|-------------|--------|
+| `base` | path | Devise de base (ex: `EUR` dans EURUSD) | Oui |
+| `quote` | path | Devise de cotation (ex: `USD` dans EURUSD) | Oui |
+| `half_life_hours` | query | Demi-vie pour la décroissance (heures) | Non (défaut: `48`) |
+| `lookback_days` | query | Jours à analyser | Non (défaut: `7`) |
+
+**Exemple :**
+
+```bash
+curl "http://localhost:8000/api/v1/scoring/pair/EUR/USD"
+```
+
+**Réponse :**
+
+```json
+{
+  "base": "EUR",
+  "quote": "USD",
+  "pair": "EURUSD",
+  "base_score": 2.7539,
+  "quote_score": 32.6464,
+  "bias": -29.8925,
+  "reference_time": "2026-01-18T21:22:09.684849"
+}
+```
+
+**Interprétation du biais :**
+
+Le biais est calculé comme : `base_score - quote_score`
+
+- Biais positif → Sentiment haussier sur la paire (base plus forte que quote)
+- Biais négatif → Sentiment baissier sur la paire (quote plus forte que base)
+
+---
+
+#### `GET /api/v1/scoring/signal/{base}/{quote}`
+
+Génère un signal de trading pour une paire de devises.
+
+**Paramètres :**
+
+| Paramètre | Type | Description | Requis |
+|-----------|------|-------------|--------|
+| `base` | path | Devise de base | Oui |
+| `quote` | path | Devise de cotation | Oui |
+| `half_life_hours` | query | Demi-vie pour la décroissance (heures) | Non (défaut: `48`) |
+| `lookback_days` | query | Jours à analyser | Non (défaut: `7`) |
+| `min_bias_threshold` | query | Seuil minimum pour générer un signal directionnel | Non (défaut: `1.0`) |
+
+**Exemple :**
+
+```bash
+curl "http://localhost:8000/api/v1/scoring/signal/EUR/USD"
+
+# Avec seuil personnalisé
+curl "http://localhost:8000/api/v1/scoring/signal/EUR/USD?min_bias_threshold=5.0"
+```
+
+**Réponse :**
+
+```json
+{
+  "base": "EUR",
+  "quote": "USD",
+  "pair": "EURUSD",
+  "bias": -29.8925,
+  "signal": "BEARISH",
+  "threshold": 1.0,
+  "reference_time": "2026-01-18T21:22:09.684849"
+}
+```
+
+**Signaux possibles :**
+
+| Signal | Condition |
+|--------|-----------|
+| `BULLISH` | biais > seuil |
+| `BEARISH` | biais < -seuil |
+| `NEUTRAL` | \|biais\| ≤ seuil |
+
 ## Codes HTTP
 
 | Code | Signification |
