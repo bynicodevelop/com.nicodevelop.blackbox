@@ -66,3 +66,4 @@ blackbox/
 - [Architecture](architecture.md)
 - [Commandes CLI](cli/commands.md)
 - [Endpoints API](api/endpoints.md)
+- [Mode YOLO (Claude Code)](claude/yolo-mode.md)

@@ -69,6 +69,8 @@ nav:
     - Commandes: cli/commands.md
   - API:
     - Endpoints: api/endpoints.md
+  - Claude Code:
+    - Mode YOLO: claude/yolo-mode.md
 
 # Extra configuration
 extra:
