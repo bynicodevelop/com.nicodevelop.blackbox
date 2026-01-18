@@ -2,11 +2,11 @@
 site_name: Blackbox Trading Robot
 site_description: Documentation for the Blackbox Trading Robot - A Python monorepo for algorithmic trading
 site_author: NicoDevelop
-site_url: https://nicodevelop.github.io/blackbox
+site_url: https://bynicodevelop.github.io/com.nicodevelop.blackbox
 
 # Repository
-repo_name: nicodevelop/blackbox
-repo_url: https://github.com/nicodevelop/blackbox
+repo_name: bynicodevelop/com.nicodevelop.blackbox
+repo_url: https://github.com/bynicodevelop/com.nicodevelop.blackbox
 
 # Theme configuration
 theme:
