@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://bynicodevelop.github.io/com.nicodevelop.blackbox/</loc>
+         <lastmod>2026-01-18</lastmod>
+    </url>
+    <url>
+         <loc>https://bynicodevelop.github.io/com.nicodevelop.blackbox/architecture/</loc>
+         <lastmod>2026-01-18</lastmod>
+    </url>
+    <url>
+         <loc>https://bynicodevelop.github.io/com.nicodevelop.blackbox/getting-started/</loc>
+         <lastmod>2026-01-18</lastmod>
+    </url>
+    <url>
+         <loc>https://bynicodevelop.github.io/com.nicodevelop.blackbox/api/endpoints/</loc>
+         <lastmod>2026-01-18</lastmod>
+    </url>
+    <url>
+         <loc>https://bynicodevelop.github.io/com.nicodevelop.blackbox/claude/yolo-mode/</loc>
+         <lastmod>2026-01-18</lastmod>
+    </url>
+    <url>
+         <loc>https://bynicodevelop.github.io/com.nicodevelop.blackbox/cli/commands/</loc>
+         <lastmod>2026-01-18</lastmod>
+    </url>
+    <url>
+         <loc>https://bynicodevelop.github.io/com.nicodevelop.blackbox/data/calendar/</loc>
+         <lastmod>2026-01-18</lastmod>
+    </url>
+    <url>
+         <loc>https://bynicodevelop.github.io/com.nicodevelop.blackbox/data/scoring/</loc>
+         <lastmod>2026-01-18</lastmod>
+    </url>
+</urlset>

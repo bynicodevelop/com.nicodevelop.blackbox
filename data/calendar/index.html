@@ -1,0 +1,2686 @@
+
+<!doctype html>
+<html lang="fr" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation for the Blackbox Trading Robot - A Python monorepo for algorithmic trading">
+      
+      
+        <meta name="author" content="NicoDevelop">
+      
+      
+        <link rel="canonical" href="https://bynicodevelop.github.io/com.nicodevelop.blackbox/data/calendar/">
+      
+      
+        <link rel="prev" href="../../architecture/">
+      
+      
+        <link rel="next" href="../scoring/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Calendrier Économique - Blackbox Trading Robot</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#calendrier-economique" class="md-skip">
+          Aller au contenu
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="En-tête">
+    <a href="../.." title="Blackbox Trading Robot" class="md-header__button md-logo" aria-label="Blackbox Trading Robot" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Blackbox Trading Robot
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Calendrier Économique
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Rechercher" placeholder="Rechercher" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Recherche">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Effacer" aria-label="Effacer" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initialisation de la recherche
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/bynicodevelop/com.nicodevelop.blackbox" title="Aller au dépôt" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    bynicodevelop/com.nicodevelop.blackbox
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Onglets" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Accueil
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../getting-started/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Guide de Démarrage
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../architecture/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  Données
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../cli/commands/" class="md-tabs__link">
+          
+  
+  
+  CLI
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/endpoints/" class="md-tabs__link">
+          
+  
+  
+  API
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../claude/yolo-mode/" class="md-tabs__link">
+          
+  
+  
+  Claude Code
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Blackbox Trading Robot" class="md-nav__button md-logo" aria-label="Blackbox Trading Robot" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Blackbox Trading Robot
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/bynicodevelop/com.nicodevelop.blackbox" title="Aller au dépôt" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    bynicodevelop/com.nicodevelop.blackbox
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Accueil
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guide de Démarrage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Données
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Données
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calendrier Économique
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Calendrier Économique
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fonctionnalites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fonctionnalités
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#utilisation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Utilisation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Utilisation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#en-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        En Python
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#via-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Via CLI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#via-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Via API
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modeles-de-donnees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modèles de données
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Modèles de données">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#economicevent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EconomicEvent
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#normalisation-des-valeurs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Normalisation des valeurs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Normalisation des valeurs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#formats-supportes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Formats supportés
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utilisation_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Utilisation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fonction-utilitaire" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fonction utilitaire
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Impact
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eventtype" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EventType
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#direction-et-poids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Direction et Poids
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#systeme-de-mapping-intelligent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Système de mapping intelligent
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Système de mapping intelligent">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-correspondance-exacte-prioritaire" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Correspondance exacte (prioritaire)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-pattern-matching-regex-fallback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Pattern matching regex (fallback)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#priorites-des-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priorités des patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evenements-non-categorises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Événements non catégorisés
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calendarday" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CalendarDay
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calendarmonth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CalendarMonth
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#forexfactoryconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ForexFactoryConfig
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#browserconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BrowserConfig
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scraperdelays" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ScraperDelays
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gestion-des-erreurs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gestion des erreurs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prérequis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notes-techniques" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notes techniques
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Notes techniques">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#anti-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anti-détection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reprise-automatique" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reprise automatique
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#depannage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dépannage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dépannage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#erreur-target-window-already-closed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Erreur "target window already closed"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#processus-chrome-qui-restent-en-arriere-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Processus Chrome qui restent en arrière-plan
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#la-base-de-donnees-nexiste-pas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        La base de données n'existe pas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#colonnes-manquantes-apres-mise-a-jour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Colonnes manquantes après mise à jour
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scoring/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scoring
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    CLI
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cli/commands/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commandes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/endpoints/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Endpoints
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Claude Code
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Claude Code
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../claude/yolo-mode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mode YOLO
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table des matières">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table des matières
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#fonctionnalites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fonctionnalités
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#utilisation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Utilisation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Utilisation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#en-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        En Python
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#via-cli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Via CLI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#via-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Via API
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modeles-de-donnees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Modèles de données
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Modèles de données">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#economicevent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EconomicEvent
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#normalisation-des-valeurs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Normalisation des valeurs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Normalisation des valeurs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#formats-supportes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Formats supportés
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utilisation_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Utilisation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fonction-utilitaire" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fonction utilitaire
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#impact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Impact
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#eventtype" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EventType
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#direction-et-poids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Direction et Poids
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#systeme-de-mapping-intelligent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Système de mapping intelligent
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Système de mapping intelligent">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-correspondance-exacte-prioritaire" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Correspondance exacte (prioritaire)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-pattern-matching-regex-fallback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Pattern matching regex (fallback)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#priorites-des-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Priorités des patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evenements-non-categorises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Événements non catégorisés
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calendarday" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CalendarDay
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calendarmonth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CalendarMonth
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#forexfactoryconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ForexFactoryConfig
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#browserconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BrowserConfig
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scraperdelays" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ScraperDelays
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gestion-des-erreurs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gestion des erreurs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prérequis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notes-techniques" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notes techniques
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Notes techniques">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#anti-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Anti-détection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reprise-automatique" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reprise automatique
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#depannage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dépannage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Dépannage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#erreur-target-window-already-closed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Erreur "target window already closed"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#processus-chrome-qui-restent-en-arriere-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Processus Chrome qui restent en arrière-plan
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#la-base-de-donnees-nexiste-pas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        La base de données n'existe pas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#colonnes-manquantes-apres-mise-a-jour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Colonnes manquantes après mise à jour
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="calendrier-economique">Calendrier Économique<a class="headerlink" href="#calendrier-economique" title="Permanent link">&para;</a></h1>
+<p>Le module de calendrier économique permet de récupérer les événements économiques majeurs depuis <a href="https://www.forexfactory.com/calendar">Forex Factory</a>.</p>
+<h2 id="fonctionnalites">Fonctionnalités<a class="headerlink" href="#fonctionnalites" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Récupération des événements passés et futurs</li>
+<li>Filtrage par devise (USD, EUR, GBP, etc.)</li>
+<li>Filtrage par niveau d'impact (low, medium, high)</li>
+<li>Valeurs actual, forecast et previous</li>
+<li>Mode headless pour l'exécution en arrière-plan</li>
+<li>Gestion anti-détection bot (undetected-chromedriver)</li>
+<li>Délais aléatoires pour simuler un comportement humain</li>
+</ul>
+<h2 id="utilisation">Utilisation<a class="headerlink" href="#utilisation" title="Permanent link">&para;</a></h2>
+<h3 id="en-python">En Python<a class="headerlink" href="#en-python" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">date</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">blackbox.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">ForexFactoryScraper</span><span class="p">,</span> <span class="n">Impact</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">blackbox.data.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">ForexFactoryConfig</span><span class="p">,</span> <span class="n">BrowserConfig</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1"># Configuration personnalisée (optionnel)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">config</span> <span class="o">=</span> <span class="n">ForexFactoryConfig</span><span class="p">(</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">browser</span><span class="o">=</span><span class="n">BrowserConfig</span><span class="p">(</span><span class="n">headless</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="p">)</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="c1"># Utilisation avec context manager (recommandé)</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="k">with</span> <span class="n">ForexFactoryScraper</span><span class="p">(</span><span class="n">config</span><span class="p">)</span> <span class="k">as</span> <span class="n">scraper</span><span class="p">:</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="c1"># Récupérer les événements du jour</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">events</span> <span class="o">=</span> <span class="n">scraper</span><span class="o">.</span><span class="n">fetch_today</span><span class="p">()</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="c1"># Récupérer un mois complet</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="n">calendar</span> <span class="o">=</span> <span class="n">scraper</span><span class="o">.</span><span class="n">fetch_month</span><span class="p">(</span><span class="mi">2026</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    <span class="c1"># Filtrer par devise</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>    <span class="n">usd_events</span> <span class="o">=</span> <span class="n">calendar</span><span class="o">.</span><span class="n">filter_by_currency</span><span class="p">([</span><span class="s2">&quot;USD&quot;</span><span class="p">,</span> <span class="s2">&quot;EUR&quot;</span><span class="p">])</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>    <span class="c1"># Filtrer par impact</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>    <span class="n">high_impact</span> <span class="o">=</span> <span class="n">calendar</span><span class="o">.</span><span class="n">filter_by_impact</span><span class="p">(</span><span class="n">Impact</span><span class="o">.</span><span class="n">HIGH</span><span class="p">)</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>    <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">high_impact</span><span class="p">:</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">date</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">time</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">currency</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">event_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Actual: </span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">actual</span><span class="si">}</span><span class="s2">, Forecast: </span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">forecast</span><span class="si">}</span><span class="s2">, Previous: </span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">previous</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="via-cli">Via CLI<a class="headerlink" href="#via-cli" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Événements du jour</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>blackbox<span class="w"> </span>calendar<span class="w"> </span>today
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Mois complet</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>blackbox<span class="w"> </span>calendar<span class="w"> </span>fetch<span class="w"> </span>--year<span class="w"> </span><span class="m">2026</span><span class="w"> </span>--month<span class="w"> </span><span class="m">1</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1"># Filtres</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>blackbox<span class="w"> </span>calendar<span class="w"> </span>fetch<span class="w"> </span>-c<span class="w"> </span>USD<span class="w"> </span>-c<span class="w"> </span>EUR<span class="w"> </span>--impact<span class="w"> </span>high
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="c1"># Sortie JSON</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>blackbox<span class="w"> </span>calendar<span class="w"> </span>today<span class="w"> </span>-j
+</code></pre></div>
+<h3 id="via-api">Via API<a class="headerlink" href="#via-api" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Événements du jour</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>curl<span class="w"> </span><span class="s2">&quot;http://localhost:8000/api/v1/calendar/today&quot;</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># Mois complet avec filtres</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>curl<span class="w"> </span><span class="s2">&quot;http://localhost:8000/api/v1/calendar/month?year=2026&amp;month=1&amp;currencies=USD,EUR&amp;high_impact_only=true&quot;</span>
+</code></pre></div>
+<h2 id="modeles-de-donnees">Modèles de données<a class="headerlink" href="#modeles-de-donnees" title="Permanent link">&para;</a></h2>
+<h3 id="economicevent">EconomicEvent<a class="headerlink" href="#economicevent" title="Permanent link">&para;</a></h3>
+<p>Représente un événement économique unique.</p>
+<table>
+<thead>
+<tr>
+<th>Champ</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>date</code></td>
+<td><code>date</code></td>
+<td>Date de l'événement</td>
+</tr>
+<tr>
+<td><code>time</code></td>
+<td><code>time \| None</code></td>
+<td>Heure (None si "All Day")</td>
+</tr>
+<tr>
+<td><code>currency</code></td>
+<td><code>str</code></td>
+<td>Devise concernée (2-5 caractères)</td>
+</tr>
+<tr>
+<td><code>impact</code></td>
+<td><code>Impact</code></td>
+<td>Niveau d'impact</td>
+</tr>
+<tr>
+<td><code>event_name</code></td>
+<td><code>str</code></td>
+<td>Nom de l'événement</td>
+</tr>
+<tr>
+<td><code>actual</code></td>
+<td><code>float \| None</code></td>
+<td>Valeur réelle publiée (normalisée)</td>
+</tr>
+<tr>
+<td><code>forecast</code></td>
+<td><code>float \| None</code></td>
+<td>Prévision (normalisée)</td>
+</tr>
+<tr>
+<td><code>previous</code></td>
+<td><code>float \| None</code></td>
+<td>Valeur précédente (normalisée)</td>
+</tr>
+<tr>
+<td><code>event_type</code></td>
+<td><code>EventType</code></td>
+<td>Catégorie de l'événement</td>
+</tr>
+<tr>
+<td><code>direction</code></td>
+<td><code>int</code></td>
+<td>Direction d'impact (+1 ou -1)</td>
+</tr>
+<tr>
+<td><code>weight</code></td>
+<td><code>int</code></td>
+<td>Poids d'importance (1-10)</td>
+</tr>
+<tr>
+<td><code>surprise</code></td>
+<td><code>float \| None</code></td>
+<td>Score de surprise normalisé (voir <a href="../scoring/">Scoring</a>)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="normalisation-des-valeurs">Normalisation des valeurs<a class="headerlink" href="#normalisation-des-valeurs" title="Permanent link">&para;</a></h2>
+<p>Les valeurs économiques (<code>actual</code>, <code>forecast</code>, <code>previous</code>) sont automatiquement normalisées lors du parsing. Cela permet de manipuler directement des nombres pour les calculs de surprise ou d'analyse.</p>
+<h3 id="formats-supportes">Formats supportés<a class="headerlink" href="#formats-supportes" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Format brut</th>
+<th>Valeur normalisée</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>"223K"</code></td>
+<td><code>223000.0</code></td>
+<td>Milliers</td>
+</tr>
+<tr>
+<td><code>"1.5M"</code></td>
+<td><code>1500000.0</code></td>
+<td>Millions</td>
+</tr>
+<tr>
+<td><code>"-50B"</code></td>
+<td><code>-50000000000.0</code></td>
+<td>Milliards (négatif)</td>
+</tr>
+<tr>
+<td><code>"2T"</code></td>
+<td><code>2000000000000.0</code></td>
+<td>Trillions</td>
+</tr>
+<tr>
+<td><code>"2.5%"</code></td>
+<td><code>0.025</code></td>
+<td>Pourcentage → décimal</td>
+</tr>
+<tr>
+<td><code>"-1.5%"</code></td>
+<td><code>-0.015</code></td>
+<td>Pourcentage négatif</td>
+</tr>
+<tr>
+<td><code>"1,234.56"</code></td>
+<td><code>1234.56</code></td>
+<td>Séparateurs de milliers</td>
+</tr>
+<tr>
+<td><code>"&lt;0.1%"</code></td>
+<td><code>0.001</code></td>
+<td>Opérateurs de comparaison ignorés</td>
+</tr>
+</tbody>
+</table>
+<h3 id="utilisation_1">Utilisation<a class="headerlink" href="#utilisation_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">blackbox.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">ForexFactoryScraper</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="k">with</span> <span class="n">ForexFactoryScraper</span><span class="p">()</span> <span class="k">as</span> <span class="n">scraper</span><span class="p">:</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="n">events</span> <span class="o">=</span> <span class="n">scraper</span><span class="o">.</span><span class="n">fetch_today</span><span class="p">()</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">surprise</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>            <span class="c1"># Le score de surprise est calculé automatiquement</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">event_name</span><span class="si">}</span><span class="s2">: Surprise = </span><span class="si">{</span><span class="n">event</span><span class="o">.</span><span class="n">surprise</span><span class="si">:</span><span class="s2">.2%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Score de surprise automatique</p>
+<p>Le champ <code>surprise</code> est calculé automatiquement lors de la création de l'événement.
+Voir la documentation <a href="../scoring/">Scoring</a> pour plus de détails sur la formule.</p>
+</div>
+<h3 id="fonction-utilitaire">Fonction utilitaire<a class="headerlink" href="#fonction-utilitaire" title="Permanent link">&para;</a></h3>
+<p>Le module <code>normalizer</code> expose également des fonctions utilitaires :</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">blackbox.data.normalizer</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_value</span><span class="p">,</span> <span class="n">format_normalized_value</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1"># Normalisation</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">value</span> <span class="o">=</span> <span class="n">normalize_value</span><span class="p">(</span><span class="s2">&quot;223K&quot;</span><span class="p">)</span>  <span class="c1"># -&gt; 223000.0</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="n">value</span> <span class="o">=</span> <span class="n">normalize_value</span><span class="p">(</span><span class="s2">&quot;2.5%&quot;</span><span class="p">)</span>  <span class="c1"># -&gt; 0.025</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c1"># Formatage inverse</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="n">text</span> <span class="o">=</span> <span class="n">format_normalized_value</span><span class="p">(</span><span class="mf">223000.0</span><span class="p">)</span>  <span class="c1"># -&gt; &quot;223.00K&quot;</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="n">text</span> <span class="o">=</span> <span class="n">format_normalized_value</span><span class="p">(</span><span class="mf">1500000.0</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># -&gt; &quot;1.5M&quot;</span>
+</code></pre></div>
+<h3 id="impact">Impact<a class="headerlink" href="#impact" title="Permanent link">&para;</a></h3>
+<p>Enum des niveaux d'impact :</p>
+<table>
+<thead>
+<tr>
+<th>Valeur</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Impact.LOW</code></td>
+<td>Faible impact</td>
+</tr>
+<tr>
+<td><code>Impact.MEDIUM</code></td>
+<td>Impact moyen</td>
+</tr>
+<tr>
+<td><code>Impact.HIGH</code></td>
+<td>Fort impact</td>
+</tr>
+<tr>
+<td><code>Impact.HOLIDAY</code></td>
+<td>Jour férié</td>
+</tr>
+<tr>
+<td><code>Impact.UNKNOWN</code></td>
+<td>Non défini</td>
+</tr>
+</tbody>
+</table>
+<h3 id="eventtype">EventType<a class="headerlink" href="#eventtype" title="Permanent link">&para;</a></h3>
+<p>Enum des types d'événements économiques pour le scoring fondamental :</p>
+<table>
+<thead>
+<tr>
+<th>Valeur</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>EventType.INTEREST_RATE</code></td>
+<td>Décisions de taux d'intérêt</td>
+</tr>
+<tr>
+<td><code>EventType.EMPLOYMENT</code></td>
+<td>Données d'emploi (NFP, chômage)</td>
+</tr>
+<tr>
+<td><code>EventType.INFLATION</code></td>
+<td>Indicateurs d'inflation (CPI, PPI)</td>
+</tr>
+<tr>
+<td><code>EventType.GROWTH</code></td>
+<td>Croissance économique (GDP, ventes)</td>
+</tr>
+<tr>
+<td><code>EventType.PMI</code></td>
+<td>Indices des directeurs d'achat</td>
+</tr>
+<tr>
+<td><code>EventType.HOUSING</code></td>
+<td>Données immobilières</td>
+</tr>
+<tr>
+<td><code>EventType.SENTIMENT</code></td>
+<td>Indicateurs de confiance</td>
+</tr>
+<tr>
+<td><code>EventType.TRADE</code></td>
+<td>Balance commerciale</td>
+</tr>
+<tr>
+<td><code>EventType.OTHER</code></td>
+<td>Autres événements</td>
+</tr>
+</tbody>
+</table>
+<h3 id="direction-et-poids">Direction et Poids<a class="headerlink" href="#direction-et-poids" title="Permanent link">&para;</a></h3>
+<p>Les événements sont enrichis automatiquement avec des métadonnées pour le scoring :</p>
+<ul>
+<li><strong>Direction</strong> (<code>+1</code> ou <code>-1</code>) : Indique si une valeur plus élevée est haussière (+1) ou baissière (-1) pour la devise</li>
+<li>Exemple : NFP (+1) - plus d'emplois = bullish pour USD</li>
+<li>
+<p>Exemple : Unemployment Rate (-1) - plus de chômage = bearish pour USD</p>
+</li>
+<li>
+<p><strong>Poids</strong> (1-10) : Importance de l'événement pour le marché</p>
+</li>
+<li>10 : Événements majeurs (NFP, CPI, décisions de taux)</li>
+<li>5-7 : Événements importants (PMI, GDP préliminaire)</li>
+<li>1-4 : Événements mineurs (housing, sentiment)</li>
+</ul>
+<h3 id="systeme-de-mapping-intelligent">Système de mapping intelligent<a class="headerlink" href="#systeme-de-mapping-intelligent" title="Permanent link">&para;</a></h3>
+<p>Le module <code>event_mapping.py</code> utilise un système de matching à deux niveaux pour catégoriser automatiquement les événements :</p>
+<h4 id="1-correspondance-exacte-prioritaire">1. Correspondance exacte (prioritaire)<a class="headerlink" href="#1-correspondance-exacte-prioritaire" title="Permanent link">&para;</a></h4>
+<p>Pour les événements connus avec des métadonnées spécifiques :</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">blackbox.data.event_mapping</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_event_metadata</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="c1"># Correspondance exacte</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">metadata</span> <span class="o">=</span> <span class="n">get_event_metadata</span><span class="p">(</span><span class="s2">&quot;Non-Farm Employment Change&quot;</span><span class="p">)</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="c1"># → EventType.EMPLOYMENT, direction=+1, weight=10</span>
+</code></pre></div>
+<h4 id="2-pattern-matching-regex-fallback">2. Pattern matching regex (fallback)<a class="headerlink" href="#2-pattern-matching-regex-fallback" title="Permanent link">&para;</a></h4>
+<p>Pour les variantes régionales et préliminaires, des patterns regex sont utilisés :</p>
+<table>
+<thead>
+<tr>
+<th>Pattern</th>
+<th>Type</th>
+<th>Exemples matchés</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>*PMI*</code></td>
+<td>PMI</td>
+<td>Spanish Manufacturing PMI, Italian Services PMI, Flash PMI</td>
+</tr>
+<tr>
+<td><code>*CPI*</code></td>
+<td>INFLATION</td>
+<td>German Prelim CPI m/m, Core CPI Flash Estimate y/y</td>
+</tr>
+<tr>
+<td><code>*PPI*</code></td>
+<td>INFLATION</td>
+<td>German PPI m/m, Core PPI y/y</td>
+</tr>
+<tr>
+<td><code>*Unemployment*</code></td>
+<td>EMPLOYMENT</td>
+<td>Spanish Unemployment Change, German Unemployment Rate</td>
+</tr>
+<tr>
+<td><code>*Trade Balance*</code></td>
+<td>TRADE</td>
+<td>French Trade Balance, Italian Trade Balance</td>
+</tr>
+<tr>
+<td><code>*Retail Sales*</code></td>
+<td>GROWTH</td>
+<td>German Retail Sales m/m, Core Retail Sales m/m</td>
+</tr>
+<tr>
+<td><code>*GDP*</code></td>
+<td>GROWTH</td>
+<td>French Flash GDP q/q, Prelim GDP q/q</td>
+</tr>
+<tr>
+<td><code>*Consumer*Confidence*</code></td>
+<td>SENTIMENT</td>
+<td>CB Consumer Confidence, GfK Consumer Confidence</td>
+</tr>
+<tr>
+<td><code>*Building*</code></td>
+<td>HOUSING</td>
+<td>Building Permits, Building Approvals m/m</td>
+</tr>
+<tr>
+<td><code>*Home Sales*</code></td>
+<td>HOUSING</td>
+<td>New Home Sales, Existing Home Sales</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Pattern matching automatique</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">metadata</span> <span class="o">=</span> <span class="n">get_event_metadata</span><span class="p">(</span><span class="s2">&quot;Spanish Manufacturing PMI&quot;</span><span class="p">)</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="c1"># → EventType.PMI, direction=+1, weight=6</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">metadata</span> <span class="o">=</span> <span class="n">get_event_metadata</span><span class="p">(</span><span class="s2">&quot;German Prelim CPI m/m&quot;</span><span class="p">)</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="c1"># → EventType.INFLATION, direction=+1, weight=9</span>
+</code></pre></div>
+<h4 id="priorites-des-patterns">Priorités des patterns<a class="headerlink" href="#priorites-des-patterns" title="Permanent link">&para;</a></h4>
+<p>Les patterns sont ordonnés par priorité (plus élevée = vérifié en premier) :</p>
+<table>
+<thead>
+<tr>
+<th>Priorité</th>
+<th>Catégorie</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>100</td>
+<td>Interest Rate (décisions de taux)</td>
+</tr>
+<tr>
+<td>90</td>
+<td>Employment (emploi, chômage)</td>
+</tr>
+<tr>
+<td>85</td>
+<td>Inflation (CPI, PPI, PCE)</td>
+</tr>
+<tr>
+<td>80</td>
+<td>Growth (GDP, retail sales)</td>
+</tr>
+<tr>
+<td>75</td>
+<td>PMI</td>
+</tr>
+<tr>
+<td>70</td>
+<td>Housing</td>
+</tr>
+<tr>
+<td>65</td>
+<td>Sentiment</td>
+</tr>
+<tr>
+<td>60</td>
+<td>Trade</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Other (speakers, auctions)</td>
+</tr>
+</tbody>
+</table>
+<h4 id="evenements-non-categorises">Événements non catégorisés<a class="headerlink" href="#evenements-non-categorises" title="Permanent link">&para;</a></h4>
+<p>Les événements sans correspondance reçoivent les valeurs par défaut :
+- <code>event_type</code>: <code>EventType.OTHER</code>
+- <code>direction</code>: <code>+1</code>
+- <code>weight</code>: <code>1</code></p>
+<h3 id="calendarday">CalendarDay<a class="headerlink" href="#calendarday" title="Permanent link">&para;</a></h3>
+<p>Événements d'une journée.</p>
+<table>
+<thead>
+<tr>
+<th>Propriété</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>date</code></td>
+<td><code>date</code></td>
+<td>Date</td>
+</tr>
+<tr>
+<td><code>events</code></td>
+<td><code>list[EconomicEvent]</code></td>
+<td>Liste des événements</td>
+</tr>
+<tr>
+<td><code>high_impact_events</code></td>
+<td><code>list[EconomicEvent]</code></td>
+<td>Événements à fort impact</td>
+</tr>
+<tr>
+<td><code>has_high_impact</code></td>
+<td><code>bool</code></td>
+<td>A des événements à fort impact</td>
+</tr>
+</tbody>
+</table>
+<h3 id="calendarmonth">CalendarMonth<a class="headerlink" href="#calendarmonth" title="Permanent link">&para;</a></h3>
+<p>Calendrier mensuel complet.</p>
+<table>
+<thead>
+<tr>
+<th>Propriété/Méthode</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>year</code></td>
+<td><code>int</code></td>
+<td>Année</td>
+</tr>
+<tr>
+<td><code>month</code></td>
+<td><code>int</code></td>
+<td>Mois (1-12)</td>
+</tr>
+<tr>
+<td><code>days</code></td>
+<td><code>list[CalendarDay]</code></td>
+<td>Jours du mois</td>
+</tr>
+<tr>
+<td><code>all_events</code></td>
+<td><code>list[EconomicEvent]</code></td>
+<td>Tous les événements</td>
+</tr>
+<tr>
+<td><code>high_impact_events</code></td>
+<td><code>list[EconomicEvent]</code></td>
+<td>Événements à fort impact</td>
+</tr>
+<tr>
+<td><code>filter_by_currency(currencies)</code></td>
+<td><code>list[EconomicEvent]</code></td>
+<td>Filtre par devise</td>
+</tr>
+<tr>
+<td><code>filter_by_impact(min_impact)</code></td>
+<td><code>list[EconomicEvent]</code></td>
+<td>Filtre par impact minimum</td>
+</tr>
+</tbody>
+</table>
+<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
+<h3 id="forexfactoryconfig">ForexFactoryConfig<a class="headerlink" href="#forexfactoryconfig" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Défaut</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>base_url</code></td>
+<td><code>str</code></td>
+<td><code>https://www.forexfactory.com/calendar</code></td>
+<td>URL de base</td>
+</tr>
+<tr>
+<td><code>max_retries</code></td>
+<td><code>int</code></td>
+<td><code>3</code></td>
+<td>Nombre de tentatives</td>
+</tr>
+<tr>
+<td><code>retry_delay</code></td>
+<td><code>float</code></td>
+<td><code>5.0</code></td>
+<td>Délai entre tentatives (secondes)</td>
+</tr>
+<tr>
+<td><code>cache_ttl</code></td>
+<td><code>int</code></td>
+<td><code>300</code></td>
+<td>Durée du cache (secondes)</td>
+</tr>
+<tr>
+<td><code>browser</code></td>
+<td><code>BrowserConfig</code></td>
+<td>-</td>
+<td>Configuration navigateur</td>
+</tr>
+<tr>
+<td><code>delays</code></td>
+<td><code>ScraperDelays</code></td>
+<td>-</td>
+<td>Configuration des délais</td>
+</tr>
+</tbody>
+</table>
+<h3 id="browserconfig">BrowserConfig<a class="headerlink" href="#browserconfig" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Défaut</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>headless</code></td>
+<td><code>bool</code></td>
+<td><code>True</code></td>
+<td>Mode sans interface</td>
+</tr>
+<tr>
+<td><code>user_agent</code></td>
+<td><code>str \| None</code></td>
+<td><code>None</code></td>
+<td>User-agent personnalisé</td>
+</tr>
+<tr>
+<td><code>page_load_timeout</code></td>
+<td><code>int</code></td>
+<td><code>30</code></td>
+<td>Timeout chargement page (s)</td>
+</tr>
+<tr>
+<td><code>implicit_wait</code></td>
+<td><code>int</code></td>
+<td><code>10</code></td>
+<td>Attente implicite (s)</td>
+</tr>
+<tr>
+<td><code>window_width</code></td>
+<td><code>int</code></td>
+<td><code>1920</code></td>
+<td>Largeur fenêtre</td>
+</tr>
+<tr>
+<td><code>window_height</code></td>
+<td><code>int</code></td>
+<td><code>1080</code></td>
+<td>Hauteur fenêtre</td>
+</tr>
+</tbody>
+</table>
+<h3 id="scraperdelays">ScraperDelays<a class="headerlink" href="#scraperdelays" title="Permanent link">&para;</a></h3>
+<p>Délais aléatoires pour simuler un comportement humain :</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Type</th>
+<th>Défaut</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>page_load_min/max</code></td>
+<td><code>float</code></td>
+<td><code>2.0/4.0</code></td>
+<td>Délai après chargement</td>
+</tr>
+<tr>
+<td><code>action_min/max</code></td>
+<td><code>float</code></td>
+<td><code>0.5/1.5</code></td>
+<td>Délai entre actions</td>
+</tr>
+<tr>
+<td><code>pagination_min/max</code></td>
+<td><code>float</code></td>
+<td><code>3.0/6.0</code></td>
+<td>Délai entre pages</td>
+</tr>
+</tbody>
+</table>
+<h2 id="gestion-des-erreurs">Gestion des erreurs<a class="headerlink" href="#gestion-des-erreurs" title="Permanent link">&para;</a></h2>
+<p>Le module définit des exceptions spécifiques :</p>
+<table>
+<thead>
+<tr>
+<th>Exception</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ScraperError</code></td>
+<td>Erreur générique de scraping</td>
+</tr>
+<tr>
+<td><code>BrowserError</code></td>
+<td>Erreur liée au navigateur</td>
+</tr>
+<tr>
+<td><code>BrowserInitializationError</code></td>
+<td>Échec d'initialisation du navigateur</td>
+</tr>
+<tr>
+<td><code>PageLoadError</code></td>
+<td>Échec de chargement de page</td>
+</tr>
+<tr>
+<td><code>ParsingError</code></td>
+<td>Échec de parsing HTML</td>
+</tr>
+<tr>
+<td><code>BlockedError</code></td>
+<td>Requête bloquée (Cloudflare, etc.)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="prerequis">Prérequis<a class="headerlink" href="#prerequis" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Google Chrome installé sur le système</li>
+<li>ChromeDriver compatible (géré automatiquement par undetected-chromedriver)</li>
+</ul>
+<h2 id="notes-techniques">Notes techniques<a class="headerlink" href="#notes-techniques" title="Permanent link">&para;</a></h2>
+<h3 id="anti-detection">Anti-détection<a class="headerlink" href="#anti-detection" title="Permanent link">&para;</a></h3>
+<p>Le scraper utilise plusieurs techniques pour éviter la détection :</p>
+<ol>
+<li><strong>undetected-chromedriver</strong> : Masque les signatures d'automatisation</li>
+<li><strong>Rotation des user-agents</strong> : Pool de user-agents réalistes</li>
+<li><strong>Délais aléatoires</strong> : Simule un comportement humain</li>
+<li><strong>Options Chrome</strong> : Désactive les fonctionnalités de détection</li>
+</ol>
+<h3 id="performance">Performance<a class="headerlink" href="#performance" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Le scraping d'un mois complet peut prendre plusieurs minutes</li>
+<li>Utilisez l'API avec le endpoint <code>/refresh</code> pour les tâches en arrière-plan</li>
+<li>Les filtres côté scraper (<code>currencies</code> dans <code>fetch_month</code>) réduisent les données retournées mais pas le temps de scraping</li>
+<li>Les données sont persistées jour par jour, permettant la reprise en cas d'interruption</li>
+</ul>
+<h3 id="reprise-automatique">Reprise automatique<a class="headerlink" href="#reprise-automatique" title="Permanent link">&para;</a></h3>
+<p>Si le scraping est interrompu (erreur, Ctrl+C, crash), il suffit de relancer la même commande. Les jours déjà scrapés seront automatiquement sautés.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Relancer après interruption - reprend là où ça s&#39;est arrêté</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>blackbox<span class="w"> </span>calendar<span class="w"> </span>fetch<span class="w"> </span>--year<span class="w"> </span><span class="m">2026</span><span class="w"> </span>--month<span class="w"> </span><span class="m">1</span>
+</code></pre></div>
+<h2 id="depannage">Dépannage<a class="headerlink" href="#depannage" title="Permanent link">&para;</a></h2>
+<h3 id="erreur-target-window-already-closed">Erreur "target window already closed"<a class="headerlink" href="#erreur-target-window-already-closed" title="Permanent link">&para;</a></h3>
+<p>Cette erreur survient quand la fenêtre Chrome se ferme pendant le scraping (crash, fermeture manuelle, timeout).</p>
+<p><strong>Solution :</strong></p>
+<ol>
+<li>
+<p>Tuer les processus Chrome zombies :
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>pkill<span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;chrome.*undetected&quot;</span>
+</code></pre></div></p>
+</li>
+<li>
+<p>Relancer la commande (reprise automatique) :
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>blackbox<span class="w"> </span>calendar<span class="w"> </span>fetch<span class="w"> </span>--year<span class="w"> </span><span class="m">2026</span><span class="w"> </span>--month<span class="w"> </span><span class="m">1</span>
+</code></pre></div></p>
+</li>
+</ol>
+<h3 id="processus-chrome-qui-restent-en-arriere-plan">Processus Chrome qui restent en arrière-plan<a class="headerlink" href="#processus-chrome-qui-restent-en-arriere-plan" title="Permanent link">&para;</a></h3>
+<p>Après un crash ou une interruption brutale, des processus Chrome peuvent rester actifs.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Voir les processus Chrome liés au scraper</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>ps<span class="w"> </span>aux<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;chrome.*undetected&quot;</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1"># Les tuer</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>pkill<span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;chrome.*undetected&quot;</span>
+</code></pre></div>
+<h3 id="la-base-de-donnees-nexiste-pas">La base de données n'existe pas<a class="headerlink" href="#la-base-de-donnees-nexiste-pas" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>relation &quot;economic_events&quot; does not exist
+</code></pre></div>
+<p><strong>Solution :</strong> Exécuter les migrations :</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># Méthode recommandée (avec Alembic)</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>blackbox<span class="w"> </span>db<span class="w"> </span>migrate
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="c1"># Ou méthode legacy</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>blackbox<span class="w"> </span>db<span class="w"> </span>init
+</code></pre></div>
+<h3 id="colonnes-manquantes-apres-mise-a-jour">Colonnes manquantes après mise à jour<a class="headerlink" href="#colonnes-manquantes-apres-mise-a-jour" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>column &quot;event_type&quot; does not exist
+</code></pre></div>
+<p><strong>Solution :</strong> Appliquer les nouvelles migrations :</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># Vérifier le statut des migrations</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>blackbox<span class="w"> </span>db<span class="w"> </span>migrate-status
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="c1"># Appliquer les migrations manquantes</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>blackbox<span class="w"> </span>db<span class="w"> </span>migrate
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Retour en haut de la page
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/nicodevelop/blackbox" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copi\u00e9 dans le presse-papier", "clipboard.copy": "Copier dans le presse-papier", "search.result.more.one": "1 de plus sur cette page", "search.result.more.other": "# de plus sur cette page", "search.result.none": "Aucun document trouv\u00e9", "search.result.one": "1 document trouv\u00e9", "search.result.other": "# documents trouv\u00e9s", "search.result.placeholder": "Taper pour d\u00e9marrer la recherche", "search.result.term.missing": "Non trouv\u00e9", "select.version": "S\u00e9lectionner la version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
