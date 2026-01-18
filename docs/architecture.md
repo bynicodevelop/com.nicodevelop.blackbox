@@ -129,9 +129,43 @@ Le module **CLI** fournit une interface ligne de commande basée sur [Click](htt
 
 Le module **API** expose une API REST avec [FastAPI](https://fastapi.tiangolo.com/) :
 
-- Endpoints pour contrôler le robot
-- Documentation automatique (Swagger/OpenAPI)
-- Authentification (à implémenter)
+- Documentation automatique (Swagger/OpenAPI) sur `/docs`
+- CORS activé pour le développement
+
+#### Endpoints disponibles
+
+**Calendrier économique :**
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/v1/calendar/month` | Événements d'un mois |
+| `GET /api/v1/calendar/today` | Événements du jour |
+| `POST /api/v1/calendar/refresh` | Rafraîchir les données |
+| `GET /api/v1/calendar/stats` | Statistiques de la base |
+
+**Scoring fondamental :**
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/v1/scoring/currency/{currency}` | Score d'une devise |
+| `GET /api/v1/scoring/pair/{base}/{quote}` | Biais d'une paire |
+| `GET /api/v1/scoring/signal/{base}/{quote}` | Signal BULLISH/BEARISH/NEUTRAL |
+
+**Paramètres de scoring :**
+
+- `half_life_hours` (défaut: 48) - Demi-vie pour la décroissance temporelle
+- `lookback_days` (défaut: 7) - Nombre de jours à analyser
+- `min_bias_threshold` (défaut: 1.0) - Seuil pour générer un signal directionnel
+
+**Exemple d'appel :**
+
+```bash
+# Score EUR avec décroissance de 24h sur 14 jours
+curl "http://localhost:8000/api/v1/scoring/currency/EUR?half_life_hours=24&lookback_days=14"
+
+# Signal EUR/USD avec seuil de 2.0
+curl "http://localhost:8000/api/v1/scoring/signal/EUR/USD?min_bias_threshold=2.0"
+```
 
 ## Flux de données
 
