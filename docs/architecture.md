@@ -30,8 +30,40 @@ Le module **core** contient toute la logique métier du trading :
 - Gestion du portefeuille
 - Calculs de risque
 - Connecteurs aux exchanges
+- **Scoring fondamental** : Analyse des événements économiques
 
 Ce module est indépendant et peut être utilisé par le CLI et l'API.
+
+#### Scoring (`src/blackbox/core/scoring/`)
+
+Le sous-module **scoring** calcule des scores fondamentaux par devise et des biais directionnels par paire :
+
+```
+scoring/
+├── __init__.py       # Exports du module
+├── config.py         # ScoringConfig (dataclass avec paramètres)
+├── calculator.py     # Fonctions de calcul pures
+└── service.py        # ScoringService (intégration repository)
+```
+
+**Composants principaux :**
+
+- **ScoringConfig** : Configuration avec `half_life_hours`, `lookback_days`, `min_bias_threshold`
+- **ScoringService** : Service principal qui intègre le repository d'événements
+- **Fonctions de calcul** :
+  - `calculate_decay()` : Décroissance temporelle exponentielle (0.5^(heures/demi-vie))
+  - `calculate_event_force()` : Force d'un événement (surprise × poids × decay)
+  - `calculate_currency_score()` : Score agrégé pour une devise
+  - `calculate_pair_bias()` : Biais directionnel (base_score - quote_score)
+  - `get_bias_signal()` : Signal BULLISH/BEARISH/NEUTRAL
+
+**Flux de scoring :**
+
+```
+EventRepository → ScoringService → Scores par devise
+                                 → Biais par paire
+                                 → Signaux directionnels
+```
 
 ### Data (`src/blackbox/data/`)
 
