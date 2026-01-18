@@ -83,6 +83,7 @@ class EventRepository:
                 "event_type": e.event_type.value,
                 "direction": e.direction,
                 "weight": e.weight,
+                "surprise": e.surprise,
             }
             for e in events
         ]
@@ -98,6 +99,7 @@ class EventRepository:
                 "event_type": stmt.excluded.event_type,
                 "direction": stmt.excluded.direction,
                 "weight": stmt.excluded.weight,
+                "surprise": stmt.excluded.surprise,
                 "updated_at": func.now(),
             },
         )
@@ -282,4 +284,5 @@ class EventRepository:
             event_type=EventType(db_event.event_type),
             direction=db_event.direction,
             weight=db_event.weight,
+            surprise=db_event.surprise,
         )

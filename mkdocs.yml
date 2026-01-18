@@ -65,6 +65,7 @@ nav:
   - Architecture: architecture.md
   - Données:
     - Calendrier Économique: data/calendar.md
+    - Scoring: data/scoring.md
   - CLI:
     - Commandes: cli/commands.md
   - API:

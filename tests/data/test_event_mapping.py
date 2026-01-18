@@ -329,6 +329,17 @@ class TestPatternMatching:
             ("FOMC Statement", EventType.INTEREST_RATE),
             ("FOMC Press Conference", EventType.INTEREST_RATE),
             ("Overnight Rate", EventType.INTEREST_RATE),
+            # Central Bank Rate Decisions
+            ("BOJ Policy Rate", EventType.INTEREST_RATE),
+            ("BOJ Monetary Policy Statement", EventType.INTEREST_RATE),
+            ("BOJ Press Conference", EventType.INTEREST_RATE),
+            ("BOJ Outlook Report", EventType.INTEREST_RATE),
+            ("ECB Main Refinancing Rate", EventType.INTEREST_RATE),
+            ("SNB Policy Rate", EventType.INTEREST_RATE),
+            ("RBA Cash Rate", EventType.INTEREST_RATE),
+            ("RBNZ Official Cash Rate", EventType.INTEREST_RATE),
+            ("BOC Overnight Rate", EventType.INTEREST_RATE),
+            ("BOE Official Bank Rate", EventType.INTEREST_RATE),
             # GDP / Growth
             ("Final GDP q/q", EventType.GROWTH),
             ("German Prelim GDP q/q", EventType.GROWTH),

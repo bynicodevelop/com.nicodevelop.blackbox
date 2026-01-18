@@ -8,9 +8,10 @@ from datetime import date
 from datetime import time as dt_time
 from enum import Enum
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from blackbox.data.normalizer import normalize_value
+from blackbox.data.scoring import calculate_surprise
 
 
 class Impact(str, Enum):
@@ -70,6 +71,25 @@ class EconomicEvent(BaseModel):
     event_type: EventType = EventType.OTHER
     direction: int = Field(default=1, ge=-1, le=1)
     weight: int = Field(default=1, ge=1, le=10)
+    surprise: float | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def compute_surprise(cls, data: dict) -> dict:
+        """Compute surprise score if not already set and data is available."""
+        if isinstance(data, dict) and data.get("surprise") is None:
+            actual = data.get("actual")
+            forecast = data.get("forecast")
+            direction = data.get("direction", 1)
+
+            # Normalize values first if they are strings
+            if isinstance(actual, str):
+                actual = normalize_value(actual)
+            if isinstance(forecast, str):
+                forecast = normalize_value(forecast)
+
+            data["surprise"] = calculate_surprise(actual, forecast, direction)
+        return data
 
     @field_validator("actual", "forecast", "previous", mode="before")
     @classmethod

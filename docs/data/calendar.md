@@ -90,6 +90,7 @@ Représente un événement économique unique.
 | `event_type` | `EventType` | Catégorie de l'événement |
 | `direction` | `int` | Direction d'impact (+1 ou -1) |
 | `weight` | `int` | Poids d'importance (1-10) |
+| `surprise` | `float \| None` | Score de surprise normalisé (voir [Scoring](scoring.md)) |
 
 ## Normalisation des valeurs
 
@@ -117,11 +118,14 @@ with ForexFactoryScraper() as scraper:
     events = scraper.fetch_today()
 
     for event in events:
-        if event.actual is not None and event.forecast is not None:
-            # Calcul de la surprise économique
-            surprise = event.actual - event.forecast
-            print(f"{event.event_name}: Surprise = {surprise}")
+        if event.surprise is not None:
+            # Le score de surprise est calculé automatiquement
+            print(f"{event.event_name}: Surprise = {event.surprise:.2%}")
 ```
+
+!!! tip "Score de surprise automatique"
+    Le champ `surprise` est calculé automatiquement lors de la création de l'événement.
+    Voir la documentation [Scoring](scoring.md) pour plus de détails sur la formule.
 
 ### Fonction utilitaire
 

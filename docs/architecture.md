@@ -49,6 +49,7 @@ data/
 ├── __init__.py
 ├── models.py             # Modèles Pydantic (EconomicEvent, EventType, etc.)
 ├── event_mapping.py      # Mapping événements → métadonnées (type, direction, poids)
+├── scoring.py            # Calculs de scoring (surprise, etc.)
 ├── config.py             # Configuration scraper
 ├── exceptions.py         # Exceptions personnalisées
 ├── services.py           # CalendarService (orchestration scraper + DB)

@@ -73,6 +73,23 @@ EVENT_PATTERNS: list[EventPattern] = [
         EventMetadata(EventType.INTEREST_RATE, +1, 9),
         priority=100,
     ),
+    EventPattern(
+        re.compile(
+            r"\b(boj|snb|rba|rbnz|boc|boe)\s+"
+            r"(policy\s+rate|cash\s+rate|overnight\s+rate|official\s+(cash\s+)?rate)\b",
+            re.IGNORECASE,
+        ),
+        EventMetadata(EventType.INTEREST_RATE, +1, 10),
+        priority=100,
+    ),
+    EventPattern(
+        re.compile(
+            r"\bboj\s+(monetary\s+policy\s+statement|press\s+conference|outlook\s+report)\b",
+            re.IGNORECASE,
+        ),
+        EventMetadata(EventType.INTEREST_RATE, +1, 9),
+        priority=100,
+    ),
     # === EMPLOYMENT (priority 90) ===
     EventPattern(
         re.compile(r"\bnon-?farm\s+(employment|payroll)", re.IGNORECASE),
@@ -405,6 +422,23 @@ EXACT_EVENT_MAPPING: dict[str, EventMetadata] = {
     "fomc press conference": EventMetadata(EventType.INTEREST_RATE, +1, 9),
     "ecb press conference": EventMetadata(EventType.INTEREST_RATE, +1, 9),
     "boe monetary policy summary": EventMetadata(EventType.INTEREST_RATE, +1, 9),
+    # BOJ (Bank of Japan) - High Impact
+    "boj policy rate": EventMetadata(EventType.INTEREST_RATE, +1, 10),
+    "boj monetary policy statement": EventMetadata(EventType.INTEREST_RATE, +1, 10),
+    "boj press conference": EventMetadata(EventType.INTEREST_RATE, +1, 9),
+    "boj outlook report": EventMetadata(EventType.INTEREST_RATE, +1, 8),
+    # ECB (European Central Bank) - Variant with prefix
+    "ecb main refinancing rate": EventMetadata(EventType.INTEREST_RATE, +1, 10),
+    # SNB (Swiss National Bank)
+    "snb policy rate": EventMetadata(EventType.INTEREST_RATE, +1, 10),
+    # RBA (Reserve Bank of Australia)
+    "rba cash rate": EventMetadata(EventType.INTEREST_RATE, +1, 10),
+    # RBNZ (Reserve Bank of New Zealand)
+    "rbnz official cash rate": EventMetadata(EventType.INTEREST_RATE, +1, 10),
+    # BOC (Bank of Canada)
+    "boc overnight rate": EventMetadata(EventType.INTEREST_RATE, +1, 10),
+    # BOE (Bank of England) - Variant with prefix
+    "boe official bank rate": EventMetadata(EventType.INTEREST_RATE, +1, 10),
     # PMI - Medium to High Impact
     "manufacturing pmi": EventMetadata(EventType.PMI, +1, 7),
     "services pmi": EventMetadata(EventType.PMI, +1, 7),
