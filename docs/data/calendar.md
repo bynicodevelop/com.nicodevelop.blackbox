@@ -180,6 +180,71 @@ Les événements sont enrichis automatiquement avec des métadonnées pour le sc
   - 5-7 : Événements importants (PMI, GDP préliminaire)
   - 1-4 : Événements mineurs (housing, sentiment)
 
+### Système de mapping intelligent
+
+Le module `event_mapping.py` utilise un système de matching à deux niveaux pour catégoriser automatiquement les événements :
+
+#### 1. Correspondance exacte (prioritaire)
+
+Pour les événements connus avec des métadonnées spécifiques :
+
+```python
+from blackbox.data.event_mapping import get_event_metadata
+
+# Correspondance exacte
+metadata = get_event_metadata("Non-Farm Employment Change")
+# → EventType.EMPLOYMENT, direction=+1, weight=10
+```
+
+#### 2. Pattern matching regex (fallback)
+
+Pour les variantes régionales et préliminaires, des patterns regex sont utilisés :
+
+| Pattern | Type | Exemples matchés |
+|---------|------|------------------|
+| `*PMI*` | PMI | Spanish Manufacturing PMI, Italian Services PMI, Flash PMI |
+| `*CPI*` | INFLATION | German Prelim CPI m/m, Core CPI Flash Estimate y/y |
+| `*PPI*` | INFLATION | German PPI m/m, Core PPI y/y |
+| `*Unemployment*` | EMPLOYMENT | Spanish Unemployment Change, German Unemployment Rate |
+| `*Trade Balance*` | TRADE | French Trade Balance, Italian Trade Balance |
+| `*Retail Sales*` | GROWTH | German Retail Sales m/m, Core Retail Sales m/m |
+| `*GDP*` | GROWTH | French Flash GDP q/q, Prelim GDP q/q |
+| `*Consumer*Confidence*` | SENTIMENT | CB Consumer Confidence, GfK Consumer Confidence |
+| `*Building*` | HOUSING | Building Permits, Building Approvals m/m |
+| `*Home Sales*` | HOUSING | New Home Sales, Existing Home Sales |
+
+```python
+# Pattern matching automatique
+metadata = get_event_metadata("Spanish Manufacturing PMI")
+# → EventType.PMI, direction=+1, weight=6
+
+metadata = get_event_metadata("German Prelim CPI m/m")
+# → EventType.INFLATION, direction=+1, weight=9
+```
+
+#### Priorités des patterns
+
+Les patterns sont ordonnés par priorité (plus élevée = vérifié en premier) :
+
+| Priorité | Catégorie |
+|----------|-----------|
+| 100 | Interest Rate (décisions de taux) |
+| 90 | Employment (emploi, chômage) |
+| 85 | Inflation (CPI, PPI, PCE) |
+| 80 | Growth (GDP, retail sales) |
+| 75 | PMI |
+| 70 | Housing |
+| 65 | Sentiment |
+| 60 | Trade |
+| 10 | Other (speakers, auctions) |
+
+#### Événements non catégorisés
+
+Les événements sans correspondance reçoivent les valeurs par défaut :
+- `event_type`: `EventType.OTHER`
+- `direction`: `+1`
+- `weight`: `1`
+
 ### CalendarDay
 
 Événements d'une journée.
