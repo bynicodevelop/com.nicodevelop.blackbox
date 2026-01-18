@@ -1,0 +1,77 @@
+# MkDocs configuration for Blackbox Trading Robot
+site_name: Blackbox Trading Robot
+site_description: Documentation for the Blackbox Trading Robot - A Python monorepo for algorithmic trading
+site_author: NicoDevelop
+site_url: https://nicodevelop.github.io/blackbox
+
+# Repository
+repo_name: nicodevelop/blackbox
+repo_url: https://github.com/nicodevelop/blackbox
+
+# Theme configuration
+theme:
+  name: material
+  language: fr
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+
+# Plugins
+plugins:
+  - search:
+      lang: fr
+
+# Markdown extensions
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+# Navigation
+nav:
+  - Accueil: index.md
+  - Guide de Démarrage: getting-started.md
+  - Architecture: architecture.md
+  - Données:
+    - Calendrier Économique: data/calendar.md
+  - CLI:
+    - Commandes: cli/commands.md
+  - API:
+    - Endpoints: api/endpoints.md
+
+# Extra configuration
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/nicodevelop/blackbox
