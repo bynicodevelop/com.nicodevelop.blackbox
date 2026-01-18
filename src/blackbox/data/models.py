@@ -7,9 +7,10 @@ economic events and calendar data.
 from datetime import date
 from datetime import time as dt_time
 from enum import Enum
-from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+from blackbox.data.normalizer import normalize_value
 
 
 class Impact(str, Enum):
@@ -39,13 +40,29 @@ class EconomicEvent(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     date: date
-    time: Optional[dt_time] = None
+    time: dt_time | None = None
     currency: str = Field(..., min_length=2, max_length=5)
     impact: Impact = Impact.UNKNOWN
     event_name: str = Field(..., min_length=1)
-    actual: Optional[str] = None
-    forecast: Optional[str] = None
-    previous: Optional[str] = None
+    actual: float | None = None
+    forecast: float | None = None
+    previous: float | None = None
+    actual_raw: str | None = Field(default=None, exclude=True)
+    forecast_raw: str | None = Field(default=None, exclude=True)
+    previous_raw: str | None = Field(default=None, exclude=True)
+
+    @field_validator("actual", "forecast", "previous", mode="before")
+    @classmethod
+    def normalize_economic_value(cls, v: str | float | None) -> float | None:
+        """Normalize economic values from string to float.
+
+        Converts values like "223K" to 223000, "2.5%" to 0.025, etc.
+        """
+        if v is None:
+            return None
+        if isinstance(v, (int, float)):
+            return float(v)
+        return normalize_value(v)
 
 
 class CalendarDay(BaseModel):
@@ -120,7 +137,5 @@ class CalendarMonth(BaseModel):
         impact_order = {Impact.LOW: 1, Impact.MEDIUM: 2, Impact.HIGH: 3}
         min_level = impact_order.get(min_impact, 0)
         return [
-            e
-            for e in self.all_events
-            if impact_order.get(e.impact, 0) >= min_level
+            e for e in self.all_events if impact_order.get(e.impact, 0) >= min_level
         ]

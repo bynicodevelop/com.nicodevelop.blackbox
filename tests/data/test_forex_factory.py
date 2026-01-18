@@ -3,10 +3,7 @@
 from datetime import date, time
 from unittest.mock import MagicMock, patch
 
-import pytest
-
 from blackbox.data.config import ForexFactoryConfig
-from blackbox.data.exceptions import ParsingError
 from blackbox.data.models import Impact
 from blackbox.data.scraper.forex_factory import ForexFactoryScraper
 
@@ -106,7 +103,9 @@ class TestForexFactoryScraper:
 
         scraper.close()
 
-    def test_parse_calendar_page(self, test_config: ForexFactoryConfig, sample_html: str):
+    def test_parse_calendar_page(
+        self, test_config: ForexFactoryConfig, sample_html: str
+    ):
         """Test parsing a calendar page."""
         scraper = ForexFactoryScraper(test_config)
 
@@ -114,13 +113,13 @@ class TestForexFactoryScraper:
 
         assert len(events) == 2
 
-        # First event
+        # First event - values are normalized
         assert events[0].currency == "USD"
         assert events[0].impact == Impact.HIGH
         assert events[0].event_name == "Non-Farm Employment Change"
-        assert events[0].actual == "223K"
-        assert events[0].forecast == "215K"
-        assert events[0].previous == "212K"
+        assert events[0].actual == 223000.0  # "223K" normalized
+        assert events[0].forecast == 215000.0  # "215K" normalized
+        assert events[0].previous == 212000.0  # "212K" normalized
 
         # Second event
         assert events[1].currency == "EUR"
@@ -142,7 +141,9 @@ class TestForexFactoryScraper:
         scraper.close()
 
     @patch("blackbox.data.scraper.forex_factory.BrowserManager")
-    def test_fetch_day(self, mock_browser_class, test_config: ForexFactoryConfig, sample_html: str):
+    def test_fetch_day(
+        self, mock_browser_class, test_config: ForexFactoryConfig, sample_html: str
+    ):
         """Test fetching a day's events."""
         mock_browser = MagicMock()
         mock_browser.navigate = MagicMock()
@@ -161,7 +162,9 @@ class TestForexFactoryScraper:
         scraper.close()
 
     @patch("blackbox.data.scraper.forex_factory.BrowserManager")
-    def test_fetch_today(self, mock_browser_class, test_config: ForexFactoryConfig, sample_html: str):
+    def test_fetch_today(
+        self, mock_browser_class, test_config: ForexFactoryConfig, sample_html: str
+    ):
         """Test fetching today's events."""
         mock_browser = MagicMock()
         mock_browser.navigate = MagicMock()
@@ -177,7 +180,9 @@ class TestForexFactoryScraper:
         scraper.close()
 
     @patch("blackbox.data.scraper.forex_factory.BrowserManager")
-    def test_context_manager(self, mock_browser_class, test_config: ForexFactoryConfig, sample_html: str):
+    def test_context_manager(
+        self, mock_browser_class, test_config: ForexFactoryConfig, sample_html: str
+    ):
         """Test using scraper as context manager."""
         mock_browser = MagicMock()
         mock_browser.navigate = MagicMock()

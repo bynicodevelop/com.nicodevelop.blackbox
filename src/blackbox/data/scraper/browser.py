@@ -5,7 +5,6 @@ with anti-detection features and human-like behavior simulation.
 """
 
 import time
-from typing import Optional
 
 import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
@@ -19,7 +18,6 @@ from blackbox.data.exceptions import (
     BrowserInitializationError,
     BrowserNavigationError,
     ElementNotFoundError,
-    PageLoadError,
 )
 
 logger = get_logger("blackbox.scraper.browser")
@@ -34,8 +32,8 @@ class BrowserManager:
 
     def __init__(
         self,
-        config: Optional[BrowserConfig] = None,
-        delays: Optional[ScraperDelays] = None,
+        config: BrowserConfig | None = None,
+        delays: ScraperDelays | None = None,
     ):
         """Initialize the browser manager.
 
@@ -45,7 +43,7 @@ class BrowserManager:
         """
         self.config = config or BrowserConfig()
         self.delays = delays or ScraperDelays()
-        self._driver: Optional[uc.Chrome] = None
+        self._driver: uc.Chrome | None = None
 
     @property
     def driver(self) -> uc.Chrome:
@@ -108,14 +106,18 @@ class BrowserManager:
             # Set timeouts
             driver.set_page_load_timeout(self.config.page_load_timeout)
             driver.implicitly_wait(self.config.implicit_wait)
-            logger.debug(f"Timeouts set: page_load={self.config.page_load_timeout}s, implicit={self.config.implicit_wait}s")
+            logger.debug(
+                f"Timeouts set: page_load={self.config.page_load_timeout}s, implicit={self.config.implicit_wait}s"
+            )
 
             logger.info("Browser initialized successfully")
             return driver
 
         except Exception as e:
             logger.error(f"Failed to initialize browser: {e}")
-            raise BrowserInitializationError(f"Failed to initialize browser: {e}") from e
+            raise BrowserInitializationError(
+                f"Failed to initialize browser: {e}"
+            ) from e
 
     def navigate(self, url: str) -> None:
         """Navigate to a URL with human-like delays.

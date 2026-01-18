@@ -4,17 +4,14 @@ This module defines the REST API endpoints for the trading robot.
 """
 
 from datetime import date
-from typing import Optional
 
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from blackbox import __version__
-from blackbox.data.config import ForexFactoryConfig
 from blackbox.data.exceptions import ScraperError
-from blackbox.data.models import Impact
-from blackbox.data.scraper.forex_factory import ForexFactoryScraper
+from blackbox.data.services import CalendarService
 
 app = FastAPI(
     title="Blackbox Trading Robot API",
@@ -106,13 +103,13 @@ class EventResponse(BaseModel):
     """API response model for a single economic event."""
 
     date: str
-    time: Optional[str]
+    time: str | None
     currency: str
     impact: str
     event_name: str
-    actual: Optional[str]
-    forecast: Optional[str]
-    previous: Optional[str]
+    actual: float | None
+    forecast: float | None
+    previous: float | None
 
 
 class CalendarMonthResponse(BaseModel):
@@ -144,64 +141,73 @@ class RefreshResponse(BaseModel):
 async def get_calendar_month(
     year: int = Query(..., ge=2000, le=2100, description="Year to fetch"),
     month: int = Query(..., ge=1, le=12, description="Month to fetch (1-12)"),
-    currencies: Optional[str] = Query(None, description="Comma-separated currency codes (e.g., USD,EUR)"),
+    currencies: str | None = Query(
+        None, description="Comma-separated currency codes (e.g., USD,EUR)"
+    ),
     high_impact_only: bool = Query(False, description="Only return high impact events"),
+    force_refresh: bool = Query(False, description="Force re-scraping even if cached"),
 ) -> CalendarMonthResponse:
     """Fetch the economic calendar for a specific month.
+
+    Uses cached data from PostgreSQL when available.
+    Use force_refresh=true to always scrape fresh data.
 
     Args:
         year: The year to fetch.
         month: The month to fetch (1-12).
         currencies: Optional comma-separated list of currencies to filter by.
         high_impact_only: If true, only return high impact events.
+        force_refresh: If true, ignore cache and scrape fresh data.
 
     Returns:
         CalendarMonthResponse with all matching events.
     """
-    currency_list = [c.strip().upper() for c in currencies.split(",")] if currencies else None
+    currency_list = (
+        [c.strip().upper() for c in currencies.split(",")] if currencies else None
+    )
+    impact = "high" if high_impact_only else None
 
     try:
-        config = ForexFactoryConfig()
-        with ForexFactoryScraper(config) as scraper:
-            calendar_month = scraper.fetch_month(year, month, currency_list)
+        service = CalendarService()
+        events = service.fetch_month(year, month, currency_list, impact, force_refresh)
 
-            events = calendar_month.all_events
-            if high_impact_only:
-                events = [e for e in events if e.impact == Impact.HIGH]
-
-            event_responses = [
-                EventResponse(
-                    date=str(e.date),
-                    time=str(e.time) if e.time else None,
-                    currency=e.currency,
-                    impact=e.impact.value,
-                    event_name=e.event_name,
-                    actual=e.actual,
-                    forecast=e.forecast,
-                    previous=e.previous,
-                )
-                for e in events
-            ]
-
-            return CalendarMonthResponse(
-                year=year,
-                month=month,
-                total_events=len(event_responses),
-                events=event_responses,
+        event_responses = [
+            EventResponse(
+                date=str(e.date),
+                time=str(e.time) if e.time else None,
+                currency=e.currency,
+                impact=e.impact.value,
+                event_name=e.event_name,
+                actual=e.actual,
+                forecast=e.forecast,
+                previous=e.previous,
             )
+            for e in events
+        ]
+
+        return CalendarMonthResponse(
+            year=year,
+            month=month,
+            total_events=len(event_responses),
+            events=event_responses,
+        )
 
     except ScraperError as e:
-        raise HTTPException(status_code=503, detail=f"Failed to fetch calendar: {str(e)}")
+        raise HTTPException(
+            status_code=503, detail=f"Failed to fetch calendar: {str(e)}"
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
 
 
 @app.get("/api/v1/calendar/today", response_model=CalendarTodayResponse)
 async def get_calendar_today(
-    currencies: Optional[str] = Query(None, description="Comma-separated currency codes"),
+    currencies: str | None = Query(None, description="Comma-separated currency codes"),
     high_impact_only: bool = Query(False, description="Only return high impact events"),
 ) -> CalendarTodayResponse:
     """Fetch today's economic calendar.
+
+    Uses cached data from PostgreSQL when available.
 
     Args:
         currencies: Optional comma-separated list of currencies to filter by.
@@ -210,43 +216,38 @@ async def get_calendar_today(
     Returns:
         CalendarTodayResponse with today's events.
     """
-    currency_list = [c.strip().upper() for c in currencies.split(",")] if currencies else None
+    currency_list = (
+        [c.strip().upper() for c in currencies.split(",")] if currencies else None
+    )
 
     try:
-        config = ForexFactoryConfig()
-        with ForexFactoryScraper(config) as scraper:
-            events = scraper.fetch_today()
+        service = CalendarService()
+        events = service.fetch_today(currency_list, high_impact_only)
 
-            # Filter by currencies
-            if currency_list:
-                events = [e for e in events if e.currency.upper() in currency_list]
-
-            # Filter by impact
-            if high_impact_only:
-                events = [e for e in events if e.impact == Impact.HIGH]
-
-            event_responses = [
-                EventResponse(
-                    date=str(e.date),
-                    time=str(e.time) if e.time else None,
-                    currency=e.currency,
-                    impact=e.impact.value,
-                    event_name=e.event_name,
-                    actual=e.actual,
-                    forecast=e.forecast,
-                    previous=e.previous,
-                )
-                for e in events
-            ]
-
-            return CalendarTodayResponse(
-                date=str(date.today()),
-                total_events=len(event_responses),
-                events=event_responses,
+        event_responses = [
+            EventResponse(
+                date=str(e.date),
+                time=str(e.time) if e.time else None,
+                currency=e.currency,
+                impact=e.impact.value,
+                event_name=e.event_name,
+                actual=e.actual,
+                forecast=e.forecast,
+                previous=e.previous,
             )
+            for e in events
+        ]
+
+        return CalendarTodayResponse(
+            date=str(date.today()),
+            total_events=len(event_responses),
+            events=event_responses,
+        )
 
     except ScraperError as e:
-        raise HTTPException(status_code=503, detail=f"Failed to fetch calendar: {str(e)}")
+        raise HTTPException(
+            status_code=503, detail=f"Failed to fetch calendar: {str(e)}"
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
 
@@ -261,10 +262,12 @@ def _do_calendar_refresh(year: int, month: int) -> None:
     _refresh_status = {"status": "running", "message": f"Refreshing {year}-{month:02d}"}
 
     try:
-        config = ForexFactoryConfig()
-        with ForexFactoryScraper(config) as scraper:
-            scraper.fetch_month(year, month)
-        _refresh_status = {"status": "completed", "message": f"Successfully refreshed {year}-{month:02d}"}
+        service = CalendarService()
+        count = service.refresh_month(year, month)
+        _refresh_status = {
+            "status": "completed",
+            "message": f"Successfully refreshed {year}-{month:02d}: {count} events",
+        }
     except Exception as e:
         _refresh_status = {"status": "error", "message": str(e)}
 
@@ -272,8 +275,12 @@ def _do_calendar_refresh(year: int, month: int) -> None:
 @app.post("/api/v1/calendar/refresh", response_model=RefreshResponse)
 async def refresh_calendar(
     background_tasks: BackgroundTasks,
-    year: Optional[int] = Query(None, ge=2000, le=2100, description="Year to refresh (default: current)"),
-    month: Optional[int] = Query(None, ge=1, le=12, description="Month to refresh (default: current)"),
+    year: int | None = Query(
+        None, ge=2000, le=2100, description="Year to refresh (default: current)"
+    ),
+    month: int | None = Query(
+        None, ge=1, le=12, description="Month to refresh (default: current)"
+    ),
 ) -> RefreshResponse:
     """Trigger a background refresh of the calendar data.
 
@@ -304,3 +311,39 @@ async def get_refresh_status() -> RefreshResponse:
         RefreshResponse with the current refresh status.
     """
     return RefreshResponse(**_refresh_status)
+
+
+class StatsResponse(BaseModel):
+    """API response model for database statistics."""
+
+    total_events: int
+    by_currency: dict[str, int]
+    by_impact: dict[str, int]
+    date_range_start: str | None
+    date_range_end: str | None
+
+
+@app.get("/api/v1/calendar/stats", response_model=StatsResponse)
+async def get_calendar_stats() -> StatsResponse:
+    """Get statistics about stored calendar events.
+
+    Returns:
+        StatsResponse with counts and date range information.
+    """
+    try:
+        service = CalendarService()
+        stats = service.get_stats()
+
+        return StatsResponse(
+            total_events=stats["total_events"],
+            by_currency=stats["by_currency"],
+            by_impact=stats["by_impact"],
+            date_range_start=str(stats["date_range"][0])
+            if stats["date_range"][0]
+            else None,
+            date_range_end=str(stats["date_range"][1])
+            if stats["date_range"][1]
+            else None,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")

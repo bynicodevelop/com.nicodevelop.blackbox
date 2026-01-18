@@ -1,7 +1,7 @@
 # Makefile for Blackbox Trading Robot
 # ====================================
 
-.PHONY: help install install-dev test lint format run-api run-cli docs docs-build clean
+.PHONY: help install install-dev test lint format run-api run-cli docs docs-build clean db-start db-stop db-init db-logs
 
 # Default target
 .DEFAULT_GOAL := help
@@ -93,6 +93,31 @@ docs-build: ## Build documentation
 	@echo "$(BLUE)Building documentation...$(NC)"
 	$(BIN)/mkdocs build
 	@echo "$(GREEN)Documentation built in site/$(NC)"
+
+# =============================================================================
+# Database
+# =============================================================================
+
+db-start: ## Start PostgreSQL with Docker Compose
+	@echo "$(BLUE)Starting PostgreSQL...$(NC)"
+	docker-compose up -d db
+	@echo "$(GREEN)PostgreSQL started on port 5432$(NC)"
+
+db-stop: ## Stop PostgreSQL
+	@echo "$(BLUE)Stopping PostgreSQL...$(NC)"
+	docker-compose down
+	@echo "$(GREEN)PostgreSQL stopped$(NC)"
+
+db-init: ## Initialize database tables
+	@echo "$(BLUE)Initializing database...$(NC)"
+	$(BIN)/blackbox db init
+	@echo "$(GREEN)Database initialized$(NC)"
+
+db-logs: ## Show PostgreSQL logs
+	docker-compose logs -f db
+
+db-stats: ## Show database statistics
+	$(BIN)/blackbox db stats
 
 # =============================================================================
 # Maintenance

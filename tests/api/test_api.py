@@ -3,7 +3,6 @@
 from fastapi.testclient import TestClient
 
 from blackbox import __version__
-from blackbox.api.main import app
 
 
 def test_root_endpoint(api_client: TestClient):

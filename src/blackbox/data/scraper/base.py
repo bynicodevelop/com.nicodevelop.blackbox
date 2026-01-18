@@ -5,7 +5,6 @@ This module defines the interface that all scrapers must implement.
 
 from abc import ABC, abstractmethod
 from datetime import date
-from typing import Optional
 
 from blackbox.data.models import CalendarMonth, EconomicEvent
 
@@ -21,7 +20,7 @@ class BaseScraper(ABC):
         self,
         year: int,
         month: int,
-        currencies: Optional[list[str]] = None,
+        currencies: list[str] | None = None,
     ) -> CalendarMonth:
         """Fetch the economic calendar for a full month.
 

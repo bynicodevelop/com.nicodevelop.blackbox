@@ -7,7 +7,6 @@ data from Forex Factory (https://www.forexfactory.com/calendar).
 import calendar
 import re
 from datetime import date, datetime, time, timedelta
-from typing import Optional
 
 from bs4 import BeautifulSoup
 from tenacity import retry, stop_after_attempt, wait_exponential
@@ -45,14 +44,14 @@ class ForexFactoryScraper(BaseScraper):
     impact levels, and actual/forecast/previous values.
     """
 
-    def __init__(self, config: Optional[ForexFactoryConfig] = None):
+    def __init__(self, config: ForexFactoryConfig | None = None):
         """Initialize the Forex Factory scraper.
 
         Args:
             config: Scraper configuration (uses defaults if not provided).
         """
         self.config = config or ForexFactoryConfig()
-        self._browser: Optional[BrowserManager] = None
+        self._browser: BrowserManager | None = None
 
     @property
     def browser(self) -> BrowserManager:
@@ -106,12 +105,12 @@ class ForexFactoryScraper(BaseScraper):
 
         return Impact.UNKNOWN
 
-    def _parse_time(self, time_str: str, event_date: date) -> Optional[time]:
+    def _parse_time(self, time_str: str, _event_date: date) -> time | None:
         """Parse time string to time object.
 
         Args:
             time_str: Time string from the calendar (e.g., "8:30am").
-            event_date: The date of the event (for context).
+            _event_date: The date of the event (reserved for future use).
 
         Returns:
             time object or None if parsing fails or time is tentative.
@@ -142,7 +141,7 @@ class ForexFactoryScraper(BaseScraper):
 
         return None
 
-    def _parse_value(self, cell: BeautifulSoup) -> Optional[str]:
+    def _parse_value(self, cell: BeautifulSoup) -> str | None:
         """Parse a value cell (actual/forecast/previous).
 
         Args:
@@ -177,7 +176,7 @@ class ForexFactoryScraper(BaseScraper):
 
             events = []
             current_date = target_date
-            current_time: Optional[time] = None
+            current_time: time | None = None
 
             for row in rows:
                 # Check for date cell (some rows span multiple events)
@@ -212,7 +211,9 @@ class ForexFactoryScraper(BaseScraper):
 
                 # Get impact
                 impact_cell = row.select_one(SELECTORS["impact"])
-                impact = self._parse_impact(impact_cell) if impact_cell else Impact.UNKNOWN
+                impact = (
+                    self._parse_impact(impact_cell) if impact_cell else Impact.UNKNOWN
+                )
 
                 # Get event name
                 event_cell = row.select_one(SELECTORS["event"])
@@ -232,9 +233,13 @@ class ForexFactoryScraper(BaseScraper):
                 forecast_cell = row.select_one(SELECTORS["forecast"])
                 previous_cell = row.select_one(SELECTORS["previous"])
 
-                actual = self._parse_value(actual_cell) if actual_cell else None
-                forecast = self._parse_value(forecast_cell) if forecast_cell else None
-                previous = self._parse_value(previous_cell) if previous_cell else None
+                actual_raw = self._parse_value(actual_cell) if actual_cell else None
+                forecast_raw = (
+                    self._parse_value(forecast_cell) if forecast_cell else None
+                )
+                previous_raw = (
+                    self._parse_value(previous_cell) if previous_cell else None
+                )
 
                 event = EconomicEvent(
                     date=current_date,
@@ -242,9 +247,12 @@ class ForexFactoryScraper(BaseScraper):
                     currency=currency,
                     impact=impact,
                     event_name=event_name,
-                    actual=actual,
-                    forecast=forecast,
-                    previous=previous,
+                    actual=actual_raw,
+                    forecast=forecast_raw,
+                    previous=previous_raw,
+                    actual_raw=actual_raw,
+                    forecast_raw=forecast_raw,
+                    previous_raw=previous_raw,
                 )
                 events.append(event)
 
@@ -282,7 +290,9 @@ class ForexFactoryScraper(BaseScraper):
         except ParsingError:
             raise
         except Exception as e:
-            raise ScraperError(f"Failed to fetch calendar for {target_date}: {e}") from e
+            raise ScraperError(
+                f"Failed to fetch calendar for {target_date}: {e}"
+            ) from e
 
     def fetch_day(self, target_date: date) -> list[EconomicEvent]:
         """Fetch economic events for a single day.
@@ -313,7 +323,7 @@ class ForexFactoryScraper(BaseScraper):
         self,
         year: int,
         month: int,
-        currencies: Optional[list[str]] = None,
+        currencies: list[str] | None = None,
     ) -> CalendarMonth:
         """Fetch the economic calendar for a full month.
 
@@ -341,7 +351,9 @@ class ForexFactoryScraper(BaseScraper):
             target_date = date(year, month, day)
             progress = (day / num_days) * 100
 
-            logger.info(f"[{progress:5.1f}%] Fetching day {day}/{num_days}: {target_date}")
+            logger.info(
+                f"[{progress:5.1f}%] Fetching day {day}/{num_days}: {target_date}"
+            )
 
             try:
                 events = self.fetch_day(target_date)
@@ -351,14 +363,20 @@ class ForexFactoryScraper(BaseScraper):
                 # Filter by currencies if specified
                 if currencies:
                     currencies_upper = [c.upper() for c in currencies]
-                    events = [e for e in events if e.currency.upper() in currencies_upper]
+                    events = [
+                        e for e in events if e.currency.upper() in currencies_upper
+                    ]
                     filtered_count = len(events)
-                    logger.debug(f"Filtered {events_count} -> {filtered_count} events (currencies: {currencies})")
+                    logger.debug(
+                        f"Filtered {events_count} -> {filtered_count} events (currencies: {currencies})"
+                    )
 
                 calendar_day = CalendarDay(date=target_date, events=events)
                 days.append(calendar_day)
 
-                logger.info(f"[{progress:5.1f}%] Day {day}/{num_days} done: {len(events)} events")
+                logger.info(
+                    f"[{progress:5.1f}%] Day {day}/{num_days} done: {len(events)} events"
+                )
 
                 # Add pagination delay between days (except last day)
                 if day < num_days:
@@ -370,14 +388,16 @@ class ForexFactoryScraper(BaseScraper):
                 # Continue with empty day on error
                 days.append(CalendarDay(date=target_date, events=[]))
 
-        logger.info(f"Completed fetch for {year}-{month:02d}: {total_events} total events across {num_days} days")
+        logger.info(
+            f"Completed fetch for {year}-{month:02d}: {total_events} total events across {num_days} days"
+        )
         return CalendarMonth(year=year, month=month, days=days)
 
     def fetch_range(
         self,
         start_date: date,
         end_date: date,
-        currencies: Optional[list[str]] = None,
+        currencies: list[str] | None = None,
     ) -> list[EconomicEvent]:
         """Fetch events for a date range.
 

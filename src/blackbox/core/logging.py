@@ -11,7 +11,6 @@ import sys
 from datetime import datetime
 from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
-from typing import Optional
 
 
 # ANSI color codes for terminal output
@@ -78,7 +77,7 @@ class FileFormatter(logging.Formatter):
 
 
 # Global configuration
-_log_dir: Optional[Path] = None
+_log_dir: Path | None = None
 _initialized: bool = False
 _console_level: int = logging.INFO
 _file_level: int = logging.DEBUG
@@ -114,7 +113,7 @@ def set_log_directory(path: Path | str) -> None:
 def setup_logging(
     console_level: int = logging.INFO,
     file_level: int = logging.DEBUG,
-    log_dir: Optional[Path | str] = None,
+    log_dir: Path | str | None = None,
 ) -> None:
     """Initialize the logging system.
 
@@ -165,7 +164,9 @@ def setup_logging(
 
     # Log initialization
     logger = logging.getLogger("blackbox.logging")
-    logger.debug(f"Logging initialized - Console: {logging.getLevelName(console_level)}, File: {logging.getLevelName(file_level)}")
+    logger.debug(
+        f"Logging initialized - Console: {logging.getLevelName(console_level)}, File: {logging.getLevelName(file_level)}"
+    )
     logger.debug(f"Log directory: {get_log_directory()}")
 
 

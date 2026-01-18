@@ -6,7 +6,6 @@ scraping delays, and specific scraper implementations.
 
 import random
 from dataclasses import dataclass, field
-from typing import Optional
 
 
 @dataclass
@@ -59,7 +58,7 @@ class BrowserConfig:
     """
 
     headless: bool = True
-    user_agent: Optional[str] = None
+    user_agent: str | None = None
     page_load_timeout: int = 30
     implicit_wait: int = 10
     window_width: int = 1920

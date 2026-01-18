@@ -1,13 +1,11 @@
 """Tests for the configuration module."""
 
-import pytest
-
 from blackbox.data.config import (
+    USER_AGENTS,
     BrowserConfig,
     ForexFactoryConfig,
     ScraperDelays,
     get_random_user_agent,
-    USER_AGENTS,
 )
 
 

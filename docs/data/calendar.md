@@ -84,9 +84,57 @@ Représente un événement économique unique.
 | `currency` | `str` | Devise concernée (2-5 caractères) |
 | `impact` | `Impact` | Niveau d'impact |
 | `event_name` | `str` | Nom de l'événement |
-| `actual` | `str \| None` | Valeur réelle publiée |
-| `forecast` | `str \| None` | Prévision |
-| `previous` | `str \| None` | Valeur précédente |
+| `actual` | `float \| None` | Valeur réelle publiée (normalisée) |
+| `forecast` | `float \| None` | Prévision (normalisée) |
+| `previous` | `float \| None` | Valeur précédente (normalisée) |
+
+## Normalisation des valeurs
+
+Les valeurs économiques (`actual`, `forecast`, `previous`) sont automatiquement normalisées lors du parsing. Cela permet de manipuler directement des nombres pour les calculs de surprise ou d'analyse.
+
+### Formats supportés
+
+| Format brut | Valeur normalisée | Description |
+|-------------|-------------------|-------------|
+| `"223K"` | `223000.0` | Milliers |
+| `"1.5M"` | `1500000.0` | Millions |
+| `"-50B"` | `-50000000000.0` | Milliards (négatif) |
+| `"2T"` | `2000000000000.0` | Trillions |
+| `"2.5%"` | `0.025` | Pourcentage → décimal |
+| `"-1.5%"` | `-0.015` | Pourcentage négatif |
+| `"1,234.56"` | `1234.56` | Séparateurs de milliers |
+| `"<0.1%"` | `0.001` | Opérateurs de comparaison ignorés |
+
+### Utilisation
+
+```python
+from blackbox.data import ForexFactoryScraper
+
+with ForexFactoryScraper() as scraper:
+    events = scraper.fetch_today()
+
+    for event in events:
+        if event.actual is not None and event.forecast is not None:
+            # Calcul de la surprise économique
+            surprise = event.actual - event.forecast
+            print(f"{event.event_name}: Surprise = {surprise}")
+```
+
+### Fonction utilitaire
+
+Le module `normalizer` expose également des fonctions utilitaires :
+
+```python
+from blackbox.data.normalizer import normalize_value, format_normalized_value
+
+# Normalisation
+value = normalize_value("223K")  # -> 223000.0
+value = normalize_value("2.5%")  # -> 0.025
+
+# Formatage inverse
+text = format_normalized_value(223000.0)  # -> "223.00K"
+text = format_normalized_value(1500000.0, precision=1)  # -> "1.5M"
+```
 
 ### Impact
 

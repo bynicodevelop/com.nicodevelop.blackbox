@@ -30,9 +30,10 @@ class TestEconomicEvent:
         assert sample_event.currency == "USD"
         assert sample_event.impact == Impact.HIGH
         assert sample_event.event_name == "Non-Farm Employment Change"
-        assert sample_event.actual == "223K"
-        assert sample_event.forecast == "215K"
-        assert sample_event.previous == "212K"
+        # Values are normalized: "223K" -> 223000.0
+        assert sample_event.actual == 223000.0
+        assert sample_event.forecast == 215000.0
+        assert sample_event.previous == 212000.0
 
     def test_create_event_minimal(self):
         """Test creating an event with minimal required fields."""
@@ -66,6 +67,66 @@ class TestEconomicEvent:
         """Test that event_name is required and non-empty."""
         with pytest.raises(ValidationError):
             EconomicEvent(date=date(2026, 1, 18), currency="USD", event_name="")
+
+    def test_value_normalization_thousands(self):
+        """Test that K suffix values are normalized to thousands."""
+        event = EconomicEvent(
+            date=date(2026, 1, 18),
+            currency="USD",
+            event_name="Test",
+            actual="223K",
+            forecast="215K",
+            previous="212K",
+        )
+        assert event.actual == 223000.0
+        assert event.forecast == 215000.0
+        assert event.previous == 212000.0
+
+    def test_value_normalization_billions(self):
+        """Test that B suffix values are normalized to billions."""
+        event = EconomicEvent(
+            date=date(2026, 1, 18),
+            currency="USD",
+            event_name="Trade Balance",
+            actual="-68.3B",
+        )
+        assert event.actual == -68300000000.0
+
+    def test_value_normalization_percentages(self):
+        """Test that percentage values are normalized to decimals."""
+        event = EconomicEvent(
+            date=date(2026, 1, 18),
+            currency="USD",
+            event_name="GDP",
+            actual="2.5%",
+            forecast="2.1%",
+        )
+        assert event.actual == 0.025
+        assert event.forecast == 0.021
+
+    def test_value_normalization_already_float(self):
+        """Test that float values pass through unchanged."""
+        event = EconomicEvent(
+            date=date(2026, 1, 18),
+            currency="USD",
+            event_name="Test",
+            actual=123.45,
+            forecast=100.0,
+        )
+        assert event.actual == 123.45
+        assert event.forecast == 100.0
+
+    def test_value_normalization_invalid_returns_none(self):
+        """Test that invalid values become None."""
+        event = EconomicEvent(
+            date=date(2026, 1, 18),
+            currency="USD",
+            event_name="Test",
+            actual="N/A",
+            forecast="TBD",
+        )
+        assert event.actual is None
+        assert event.forecast is None
 
 
 class TestCalendarDay:
