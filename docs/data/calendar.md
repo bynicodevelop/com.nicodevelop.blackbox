@@ -320,8 +320,28 @@ pkill -f "chrome.*undetected"
 relation "economic_events" does not exist
 ```
 
-**Solution :** Initialiser la base de données :
+**Solution :** Exécuter les migrations :
 
 ```bash
+# Méthode recommandée (avec Alembic)
+blackbox db migrate
+
+# Ou méthode legacy
 blackbox db init
+```
+
+### Colonnes manquantes après mise à jour
+
+```
+column "event_type" does not exist
+```
+
+**Solution :** Appliquer les nouvelles migrations :
+
+```bash
+# Vérifier le statut des migrations
+blackbox db migrate-status
+
+# Appliquer les migrations manquantes
+blackbox db migrate
 ```

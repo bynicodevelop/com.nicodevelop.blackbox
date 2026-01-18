@@ -48,7 +48,9 @@ class TestEventMapping:
         """Test that all mapping values have valid metadata."""
         for key, metadata in EVENT_MAPPING.items():
             assert isinstance(metadata, EventMetadata), f"Invalid metadata for '{key}'"
-            assert isinstance(metadata.event_type, EventType), f"Invalid event_type for '{key}'"
+            assert isinstance(metadata.event_type, EventType), (
+                f"Invalid event_type for '{key}'"
+            )
             assert metadata.direction in (-1, +1), f"Invalid direction for '{key}'"
             assert 1 <= metadata.weight <= 10, f"Invalid weight for '{key}'"
 
@@ -63,7 +65,9 @@ class TestEventMapping:
             "federal funds rate",
         ]
         for event in high_impact_events:
-            assert event in EVENT_MAPPING, f"High-impact event '{event}' missing from mapping"
+            assert event in EVENT_MAPPING, (
+                f"High-impact event '{event}' missing from mapping"
+            )
 
 
 class TestGetEventMetadata:

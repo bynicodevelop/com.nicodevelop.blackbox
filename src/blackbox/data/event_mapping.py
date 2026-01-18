@@ -106,7 +106,9 @@ EVENT_MAPPING: dict[str, EventMetadata] = {
     "consumer confidence": EventMetadata(EventType.SENTIMENT, +1, 5),
     "cb consumer confidence": EventMetadata(EventType.SENTIMENT, +1, 6),
     "michigan consumer sentiment": EventMetadata(EventType.SENTIMENT, +1, 5),
-    "university of michigan consumer sentiment": EventMetadata(EventType.SENTIMENT, +1, 5),
+    "university of michigan consumer sentiment": EventMetadata(
+        EventType.SENTIMENT, +1, 5
+    ),
     "zew economic sentiment": EventMetadata(EventType.SENTIMENT, +1, 5),
     "ifo business climate": EventMetadata(EventType.SENTIMENT, +1, 5),
     "gfk consumer climate": EventMetadata(EventType.SENTIMENT, +1, 4),

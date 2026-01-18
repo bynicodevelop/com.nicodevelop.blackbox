@@ -99,6 +99,95 @@ Lance un backtest sur une stratégie.
 blackbox backtest ma_strategie
 ```
 
+## Base de données
+
+Le groupe de commandes `db` permet de gérer la base de données PostgreSQL.
+
+### `blackbox db migrate`
+
+Exécute les migrations de base de données avec Alembic.
+
+**Options :**
+
+| Option | Description | Défaut |
+|--------|-------------|--------|
+| `-r, --revision` | Révision cible | `head` (dernière) |
+
+**Exemples :**
+
+```bash
+# Migrer vers la dernière version
+blackbox db migrate
+
+# Migrer vers une révision spécifique
+blackbox db migrate -r 001
+```
+
+### `blackbox db migrate-status`
+
+Affiche l'état actuel des migrations.
+
+```bash
+blackbox db migrate-status
+```
+
+### `blackbox db init`
+
+Initialise les tables de la base de données (méthode legacy).
+
+> **Note :** Préférez `blackbox db migrate` pour les environnements de production.
+
+```bash
+blackbox db init
+```
+
+### `blackbox db stats`
+
+Affiche les statistiques sur les événements stockés.
+
+```bash
+$ blackbox db stats
+
+Database Statistics
+========================================
+Total events: 1250
+Date range: 2026-01-01 to 2026-01-31
+
+By Currency:
+  USD: 450
+  EUR: 320
+  GBP: 180
+  ...
+
+By Impact:
+  high: 125
+  medium: 425
+  low: 700
+```
+
+### `blackbox db export`
+
+Exporte les événements en CSV ou JSON.
+
+**Options :**
+
+| Option | Description | Défaut |
+|--------|-------------|--------|
+| `-f, --format` | Format d'export (`csv`, `json`) | `json` |
+| `-y, --year` | Année à exporter | Toutes |
+| `-m, --month` | Mois à exporter | Tous |
+| `-o, --output` | Fichier de sortie | stdout |
+
+**Exemples :**
+
+```bash
+# Exporter tout en JSON
+blackbox db export
+
+# Exporter un mois en CSV
+blackbox db export --format csv --year 2026 --month 1 -o events.csv
+```
+
 ## Calendrier économique
 
 Le groupe de commandes `calendar` permet de récupérer les événements économiques depuis Forex Factory.

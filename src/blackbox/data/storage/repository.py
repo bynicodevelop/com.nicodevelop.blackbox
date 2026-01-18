@@ -11,7 +11,7 @@ from sqlalchemy import and_, func, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.orm import Session
 
-from blackbox.data.models import EconomicEvent, Impact
+from blackbox.data.models import EconomicEvent, EventType, Impact
 from blackbox.data.storage.models import EconomicEventDB
 
 
@@ -80,6 +80,9 @@ class EventRepository:
                 "actual": e.actual,
                 "forecast": e.forecast,
                 "previous": e.previous,
+                "event_type": e.event_type.value,
+                "direction": e.direction,
+                "weight": e.weight,
             }
             for e in events
         ]
@@ -92,6 +95,9 @@ class EventRepository:
                 "forecast": stmt.excluded.forecast,
                 "previous": stmt.excluded.previous,
                 "impact": stmt.excluded.impact,
+                "event_type": stmt.excluded.event_type,
+                "direction": stmt.excluded.direction,
+                "weight": stmt.excluded.weight,
                 "updated_at": func.now(),
             },
         )
@@ -273,4 +279,7 @@ class EventRepository:
             actual=db_event.actual,
             forecast=db_event.forecast,
             previous=db_event.previous,
+            event_type=EventType(db_event.event_type),
+            direction=db_event.direction,
+            weight=db_event.weight,
         )

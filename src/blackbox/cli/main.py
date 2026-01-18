@@ -282,9 +282,10 @@ def db() -> None:
 
 @db.command("init")
 def db_init() -> None:
-    """Initialize the database tables.
+    """Initialize the database tables (deprecated, use 'db migrate').
 
-    Creates all required tables in PostgreSQL.
+    Creates all required tables in PostgreSQL using SQLAlchemy create_all.
+    For production, prefer using 'blackbox db migrate' which uses Alembic.
 
     Examples:
         blackbox db init
@@ -292,8 +293,82 @@ def db_init() -> None:
     try:
         init_db()
         click.echo("Database tables created successfully.")
+        click.echo("Note: For production, use 'blackbox db migrate' instead.")
     except Exception as e:
         click.echo(f"Error initializing database: {e}", err=True)
+        raise click.Abort()
+
+
+@db.command("migrate")
+@click.option(
+    "--revision",
+    "-r",
+    default="head",
+    help="Target revision (default: head for latest)",
+)
+def db_migrate(revision: str) -> None:
+    """Run database migrations using Alembic.
+
+    Applies pending migrations to bring the database up to date.
+    Use --revision to migrate to a specific version.
+
+    Examples:
+        blackbox db migrate           # Migrate to latest
+        blackbox db migrate -r 001    # Migrate to specific revision
+    """
+    try:
+        # Get the alembic.ini path (project root)
+        import os
+
+        from alembic import command
+        from alembic.config import Config
+
+        project_root = os.path.dirname(
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        )
+        alembic_ini = os.path.join(project_root, "alembic.ini")
+
+        if not os.path.exists(alembic_ini):
+            click.echo(f"Error: alembic.ini not found at {alembic_ini}", err=True)
+            raise click.Abort()
+
+        alembic_cfg = Config(alembic_ini)
+        command.upgrade(alembic_cfg, revision)
+        click.echo(f"Database migrated to revision: {revision}")
+    except Exception as e:
+        click.echo(f"Error running migrations: {e}", err=True)
+        raise click.Abort()
+
+
+@db.command("migrate-status")
+def db_migrate_status() -> None:
+    """Show current migration status.
+
+    Displays which migrations have been applied and which are pending.
+
+    Examples:
+        blackbox db migrate-status
+    """
+    try:
+        import os
+
+        from alembic import command
+        from alembic.config import Config
+
+        project_root = os.path.dirname(
+            os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        )
+        alembic_ini = os.path.join(project_root, "alembic.ini")
+
+        if not os.path.exists(alembic_ini):
+            click.echo(f"Error: alembic.ini not found at {alembic_ini}", err=True)
+            raise click.Abort()
+
+        alembic_cfg = Config(alembic_ini)
+        click.echo("Current migration status:")
+        command.current(alembic_cfg, verbose=True)
+    except Exception as e:
+        click.echo(f"Error checking migration status: {e}", err=True)
         raise click.Abort()
 
 

@@ -38,6 +38,9 @@ class EconomicEventDB(Base):
         actual: The actual reported value.
         forecast: The forecasted value.
         previous: The previous period's value.
+        event_type: Category of the event for fundamental scoring.
+        direction: Impact direction (+1 = higher is bullish, -1 = higher is bearish).
+        weight: Importance weight from 1 (low) to 10 (high).
         scraped_at: Timestamp when the event was first scraped.
         updated_at: Timestamp when the event was last updated.
     """
@@ -53,6 +56,9 @@ class EconomicEventDB(Base):
     actual: Mapped[float | None] = mapped_column(Float, nullable=True)
     forecast: Mapped[float | None] = mapped_column(Float, nullable=True)
     previous: Mapped[float | None] = mapped_column(Float, nullable=True)
+    event_type: Mapped[str] = mapped_column(String(20), nullable=False, default="other")
+    direction: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
+    weight: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     scraped_at: Mapped[datetime] = mapped_column(
         DateTime, server_default=func.now(), nullable=False
     )
