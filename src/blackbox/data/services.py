@@ -75,36 +75,24 @@ class CalendarService:
             repo = EventRepository(session)
 
             if force_refresh:
+                # Force refresh: scrape everything, overwrite existing
                 logger.info(f"Force refresh requested for {year}-{month:02d}")
-                events = self._scrape_and_store_month(year, month, repo)
+                self._scrape_and_store_month(year, month, repo, skip_existing=False)
             else:
-                # Check if we have data
-                has_data = repo.has_events_for_month(year, month)
+                # Normal mode: scrape missing days, update days needing actual values
+                logger.info(f"Scraping missing days for {year}-{month:02d}...")
+                self._scrape_and_store_month(year, month, repo, skip_existing=True)
 
-                if not has_data:
-                    logger.info(f"No cached data for {year}-{month:02d}, scraping...")
-                    events = self._scrape_and_store_month(year, month, repo)
-                else:
-                    # Check for events needing updates
-                    dates_to_update = repo.get_events_needing_update(
-                        start_date, end_date
+                # Check for events needing updates (actual IS NULL for past/today)
+                dates_to_update = repo.get_events_needing_update(start_date, end_date)
+                if dates_to_update:
+                    logger.info(
+                        f"Updating {len(dates_to_update)} dates with missing actuals"
                     )
+                    self._scrape_and_store_dates(dates_to_update, repo)
 
-                    if dates_to_update:
-                        logger.info(
-                            f"Found {len(dates_to_update)} dates needing updates"
-                        )
-                        self._scrape_and_store_dates(dates_to_update, repo)
-
-                    # Return from cache
-                    logger.info(f"Returning cached data for {year}-{month:02d}")
-                    events = repo.get_events(start_date, end_date, currencies, impact)
-
-            # Apply filters if we just scraped (filters not applied during scrape)
-            if force_refresh or not has_data:
-                events = repo.get_events(start_date, end_date, currencies, impact)
-
-            return events
+            # Return filtered events from database
+            return repo.get_events(start_date, end_date, currencies, impact)
 
     def fetch_today(
         self,
@@ -172,28 +160,82 @@ class CalendarService:
         month: int,
         repo: EventRepository,
         return_count: bool = False,
+        skip_existing: bool = False,
     ) -> list[EconomicEvent] | int:
-        """Scrape a full month and store in database.
+        """Scrape a full month and store in database, day by day.
+
+        Each day is persisted immediately after scraping, allowing
+        recovery from failures without losing progress.
 
         Args:
             year: The year to scrape.
             month: The month to scrape.
             repo: Repository instance.
             return_count: If True, return count instead of events.
+            skip_existing: If True, skip days that already have events in DB.
 
         Returns:
             List of events or count if return_count is True.
         """
+        _, num_days = cal.monthrange(year, month)
+        total_count = 0
+        all_events: list[EconomicEvent] = []
+
+        # Get dates to skip if skip_existing is enabled
+        dates_to_skip: set[date] = set()
+        if skip_existing:
+            start_date = date(year, month, 1)
+            end_date = date(year, month, num_days)
+            existing_events = repo.get_events(start_date, end_date)
+            dates_to_skip = {e.date for e in existing_events}
+            if dates_to_skip:
+                logger.info(f"Skipping {len(dates_to_skip)} days with existing data")
+
         with ForexFactoryScraper(self.config) as scraper:
-            calendar_month = scraper.fetch_month(year, month)
-            events = calendar_month.all_events
+            for day in range(1, num_days + 1):
+                target_date = date(year, month, day)
+                progress = (day / num_days) * 100
 
-            count = repo.upsert_events(events)
-            logger.info(f"Upserted {count} events for {year}-{month:02d}")
+                # Skip if already in DB
+                if target_date in dates_to_skip:
+                    logger.debug(f"[{progress:5.1f}%] Skipping {target_date} (exists)")
+                    continue
 
-            if return_count:
-                return count
-            return events
+                logger.info(
+                    f"[{progress:5.1f}%] Scraping day {day}/{num_days}: {target_date}"
+                )
+
+                try:
+                    # Scrape the day
+                    events = scraper.fetch_day(target_date)
+
+                    # Persist immediately and commit to make visible
+                    count = repo.upsert_events(events)
+                    repo.session.commit()
+                    total_count += count
+                    all_events.extend(events)
+
+                    logger.info(
+                        f"[{progress:5.1f}%] Persisted {count} events for {target_date}"
+                    )
+
+                    # Add delay between days (except last day)
+                    if day < num_days:
+                        scraper.browser.pagination_delay()
+
+                except Exception as e:
+                    logger.warning(
+                        f"[{progress:5.1f}%] Failed to scrape {target_date}: {e}"
+                    )
+                    # Continue with next day on error
+
+        logger.info(
+            f"Completed {year}-{month:02d}: {total_count} events across {num_days} days"
+        )
+
+        if return_count:
+            return total_count
+        return all_events
 
     def _scrape_and_store_dates(
         self,
@@ -215,6 +257,7 @@ class CalendarService:
             for target_date in dates:
                 events = scraper.fetch_day(target_date)
                 count = repo.upsert_events(events)
+                repo.session.commit()
                 total_count += count
                 logger.info(f"Upserted {count} events for {target_date}")
 
@@ -237,5 +280,6 @@ class CalendarService:
         with ForexFactoryScraper(self.config) as scraper:
             events = scraper.fetch_day(target_date)
             count = repo.upsert_events(events)
+            repo.session.commit()
             logger.info(f"Upserted {count} events for {target_date}")
             return events

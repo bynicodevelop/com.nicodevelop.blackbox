@@ -7,7 +7,7 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from blackbox.data.models import CalendarDay, CalendarMonth, EconomicEvent, Impact
+from blackbox.data.models import EconomicEvent, Impact
 from blackbox.data.services import CalendarService
 from blackbox.data.storage.models import Base
 
@@ -45,120 +45,118 @@ def mock_get_session(test_engine):
 
 
 @pytest.fixture
-def sample_calendar_month():
-    """Create a sample calendar month for scraper mock."""
-    events = [
-        EconomicEvent(
-            date=date(2026, 1, 15),
-            time=time(8, 30),
-            currency="USD",
-            impact=Impact.HIGH,
-            event_name="NFP",
-            actual="200K",
-            forecast="195K",
-            previous="190K",
-        ),
-        EconomicEvent(
-            date=date(2026, 1, 16),
-            time=time(10, 0),
-            currency="EUR",
-            impact=Impact.MEDIUM,
-            event_name="CPI",
-            actual=None,
-            forecast="2.5%",
-            previous="2.4%",
-        ),
-    ]
-    days = [
-        CalendarDay(
-            date=date(2026, 1, 15),
-            events=[e for e in events if e.date == date(2026, 1, 15)],
-        ),
-        CalendarDay(
-            date=date(2026, 1, 16),
-            events=[e for e in events if e.date == date(2026, 1, 16)],
-        ),
-    ]
-    return CalendarMonth(year=2026, month=1, days=days)
+def sample_events_by_date():
+    """Create sample events indexed by date for scraper mock."""
+    return {
+        date(2026, 1, 15): [
+            EconomicEvent(
+                date=date(2026, 1, 15),
+                time=time(8, 30),
+                currency="USD",
+                impact=Impact.HIGH,
+                event_name="NFP",
+                actual="200K",
+                forecast="195K",
+                previous="190K",
+            ),
+        ],
+        date(2026, 1, 16): [
+            EconomicEvent(
+                date=date(2026, 1, 16),
+                time=time(10, 0),
+                currency="EUR",
+                impact=Impact.MEDIUM,
+                event_name="CPI",
+                actual=None,
+                forecast="2.5%",
+                previous="2.4%",
+            ),
+        ],
+    }
+
+
+def create_mock_scraper(events_by_date: dict):
+    """Helper to create a mock scraper that returns events by date."""
+    mock_scraper = MagicMock()
+
+    def fetch_day_side_effect(target_date):
+        return events_by_date.get(target_date, [])
+
+    mock_scraper.fetch_day.side_effect = fetch_day_side_effect
+    mock_scraper.browser = MagicMock()
+    mock_scraper.browser.pagination_delay = MagicMock()
+    mock_scraper.__enter__ = MagicMock(return_value=mock_scraper)
+    mock_scraper.__exit__ = MagicMock(return_value=False)
+    return mock_scraper
 
 
 class TestCalendarServiceFetchMonth:
     """Tests for the fetch_month method."""
 
-    def test_fetch_month_scrapes_when_no_cache(
-        self, mock_get_session, sample_calendar_month
+    def test_fetch_month_scrapes_day_by_day(
+        self, mock_get_session, sample_events_by_date
     ):
-        """Test that fetch_month scrapes when no cached data exists."""
+        """Test that fetch_month scrapes each day and persists immediately."""
         with patch("blackbox.data.services.ForexFactoryScraper") as mock_scraper_class:
-            # Setup mock scraper
-            mock_scraper = MagicMock()
-            mock_scraper.fetch_month.return_value = sample_calendar_month
-            mock_scraper.__enter__ = MagicMock(return_value=mock_scraper)
-            mock_scraper.__exit__ = MagicMock(return_value=False)
+            mock_scraper = create_mock_scraper(sample_events_by_date)
             mock_scraper_class.return_value = mock_scraper
 
             service = CalendarService()
             events = service.fetch_month(2026, 1)
 
-            # Verify scraper was called
-            mock_scraper.fetch_month.assert_called_once_with(2026, 1)
+            # Verify fetch_day was called for each day of January (31 days)
+            assert mock_scraper.fetch_day.call_count == 31
+            # Should have 2 events total (from days 15 and 16)
             assert len(events) == 2
 
-    def test_fetch_month_uses_cache_when_data_exists(
-        self, mock_get_session, sample_calendar_month
+    def test_fetch_month_skips_existing_days(
+        self, mock_get_session, sample_events_by_date
     ):
-        """Test that fetch_month uses cache when data exists."""
+        """Test that fetch_month skips days that already have data."""
         with patch("blackbox.data.services.ForexFactoryScraper") as mock_scraper_class:
-            # Setup mock scraper
-            mock_scraper = MagicMock()
-            mock_scraper.fetch_month.return_value = sample_calendar_month
-            mock_scraper.__enter__ = MagicMock(return_value=mock_scraper)
-            mock_scraper.__exit__ = MagicMock(return_value=False)
+            mock_scraper = create_mock_scraper(sample_events_by_date)
             mock_scraper_class.return_value = mock_scraper
 
             service = CalendarService()
 
-            # First call - should scrape
+            # First call - should scrape all 31 days
             service.fetch_month(2026, 1)
-            assert mock_scraper.fetch_month.call_count == 1
+            first_call_count = mock_scraper.fetch_day.call_count
+            assert first_call_count == 31
 
-            # Second call - should use cache
+            # Second call - should skip days with existing data
+            mock_scraper.fetch_day.reset_mock()
             events = service.fetch_month(2026, 1)
-            # Still only called once (used cache)
-            assert mock_scraper.fetch_month.call_count == 1
+
+            # Should skip days 15 and 16 (have data), scrape remaining 29 days
+            assert mock_scraper.fetch_day.call_count == 29
             assert len(events) == 2
 
-    def test_fetch_month_force_refresh_always_scrapes(
-        self, mock_get_session, sample_calendar_month
+    def test_fetch_month_force_refresh_scrapes_all(
+        self, mock_get_session, sample_events_by_date
     ):
-        """Test that force_refresh always triggers scraping."""
+        """Test that force_refresh scrapes all days regardless of cache."""
         with patch("blackbox.data.services.ForexFactoryScraper") as mock_scraper_class:
-            # Setup mock scraper
-            mock_scraper = MagicMock()
-            mock_scraper.fetch_month.return_value = sample_calendar_month
-            mock_scraper.__enter__ = MagicMock(return_value=mock_scraper)
-            mock_scraper.__exit__ = MagicMock(return_value=False)
+            mock_scraper = create_mock_scraper(sample_events_by_date)
             mock_scraper_class.return_value = mock_scraper
 
             service = CalendarService()
 
-            # First call - should scrape
+            # First call - scrape all
             service.fetch_month(2026, 1)
-            assert mock_scraper.fetch_month.call_count == 1
+            assert mock_scraper.fetch_day.call_count == 31
 
-            # Second call with force_refresh - should scrape again
+            # Second call with force_refresh - should scrape all again
+            mock_scraper.fetch_day.reset_mock()
             service.fetch_month(2026, 1, force_refresh=True)
-            assert mock_scraper.fetch_month.call_count == 2
+            assert mock_scraper.fetch_day.call_count == 31
 
     def test_fetch_month_applies_currency_filter(
-        self, mock_get_session, sample_calendar_month
+        self, mock_get_session, sample_events_by_date
     ):
         """Test that currency filter is applied correctly."""
         with patch("blackbox.data.services.ForexFactoryScraper") as mock_scraper_class:
-            mock_scraper = MagicMock()
-            mock_scraper.fetch_month.return_value = sample_calendar_month
-            mock_scraper.__enter__ = MagicMock(return_value=mock_scraper)
-            mock_scraper.__exit__ = MagicMock(return_value=False)
+            mock_scraper = create_mock_scraper(sample_events_by_date)
             mock_scraper_class.return_value = mock_scraper
 
             service = CalendarService()
@@ -168,14 +166,11 @@ class TestCalendarServiceFetchMonth:
             assert events[0].currency == "USD"
 
     def test_fetch_month_applies_impact_filter(
-        self, mock_get_session, sample_calendar_month
+        self, mock_get_session, sample_events_by_date
     ):
         """Test that impact filter is applied correctly."""
         with patch("blackbox.data.services.ForexFactoryScraper") as mock_scraper_class:
-            mock_scraper = MagicMock()
-            mock_scraper.fetch_month.return_value = sample_calendar_month
-            mock_scraper.__enter__ = MagicMock(return_value=mock_scraper)
-            mock_scraper.__exit__ = MagicMock(return_value=False)
+            mock_scraper = create_mock_scraper(sample_events_by_date)
             mock_scraper_class.return_value = mock_scraper
 
             service = CalendarService()
@@ -259,14 +254,11 @@ class TestCalendarServiceStats:
     """Tests for the get_stats method."""
 
     def test_get_stats_returns_statistics(
-        self, mock_get_session, sample_calendar_month
+        self, mock_get_session, sample_events_by_date
     ):
         """Test that get_stats returns correct statistics."""
         with patch("blackbox.data.services.ForexFactoryScraper") as mock_scraper_class:
-            mock_scraper = MagicMock()
-            mock_scraper.fetch_month.return_value = sample_calendar_month
-            mock_scraper.__enter__ = MagicMock(return_value=mock_scraper)
-            mock_scraper.__exit__ = MagicMock(return_value=False)
+            mock_scraper = create_mock_scraper(sample_events_by_date)
             mock_scraper_class.return_value = mock_scraper
 
             service = CalendarService()

@@ -241,3 +241,55 @@ Le scraper utilise plusieurs techniques pour éviter la détection :
 - Le scraping d'un mois complet peut prendre plusieurs minutes
 - Utilisez l'API avec le endpoint `/refresh` pour les tâches en arrière-plan
 - Les filtres côté scraper (`currencies` dans `fetch_month`) réduisent les données retournées mais pas le temps de scraping
+- Les données sont persistées jour par jour, permettant la reprise en cas d'interruption
+
+### Reprise automatique
+
+Si le scraping est interrompu (erreur, Ctrl+C, crash), il suffit de relancer la même commande. Les jours déjà scrapés seront automatiquement sautés.
+
+```bash
+# Relancer après interruption - reprend là où ça s'est arrêté
+blackbox calendar fetch --year 2026 --month 1
+```
+
+## Dépannage
+
+### Erreur "target window already closed"
+
+Cette erreur survient quand la fenêtre Chrome se ferme pendant le scraping (crash, fermeture manuelle, timeout).
+
+**Solution :**
+
+1. Tuer les processus Chrome zombies :
+   ```bash
+   pkill -f "chrome.*undetected"
+   ```
+
+2. Relancer la commande (reprise automatique) :
+   ```bash
+   blackbox calendar fetch --year 2026 --month 1
+   ```
+
+### Processus Chrome qui restent en arrière-plan
+
+Après un crash ou une interruption brutale, des processus Chrome peuvent rester actifs.
+
+```bash
+# Voir les processus Chrome liés au scraper
+ps aux | grep "chrome.*undetected"
+
+# Les tuer
+pkill -f "chrome.*undetected"
+```
+
+### La base de données n'existe pas
+
+```
+relation "economic_events" does not exist
+```
+
+**Solution :** Initialiser la base de données :
+
+```bash
+blackbox db init
+```
