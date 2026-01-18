@@ -13,6 +13,7 @@ from tenacity import retry, stop_after_attempt, wait_exponential
 
 from blackbox.core.logging import get_logger
 from blackbox.data.config import ForexFactoryConfig
+from blackbox.data.event_mapping import get_event_metadata
 from blackbox.data.exceptions import ParsingError, ScraperError
 from blackbox.data.models import CalendarDay, CalendarMonth, EconomicEvent, Impact
 from blackbox.data.scraper.base import BaseScraper
@@ -241,6 +242,9 @@ class ForexFactoryScraper(BaseScraper):
                     self._parse_value(previous_cell) if previous_cell else None
                 )
 
+                # Get event metadata for enrichment
+                metadata = get_event_metadata(event_name)
+
                 event = EconomicEvent(
                     date=current_date,
                     time=current_time,
@@ -253,6 +257,9 @@ class ForexFactoryScraper(BaseScraper):
                     actual_raw=actual_raw,
                     forecast_raw=forecast_raw,
                     previous_raw=previous_raw,
+                    event_type=metadata.event_type,
+                    direction=metadata.direction,
+                    weight=metadata.weight,
                 )
                 events.append(event)
 
