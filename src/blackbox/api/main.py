@@ -3,15 +3,18 @@
 This module defines the REST API endpoints for the trading robot.
 """
 
-from datetime import date
+from datetime import date, datetime
 
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from blackbox import __version__
+from blackbox.core.scoring import ScoringConfig, ScoringService
 from blackbox.data.exceptions import ScraperError
 from blackbox.data.services import CalendarService
+from blackbox.data.storage.database import get_session
+from blackbox.data.storage.repository import EventRepository
 
 app = FastAPI(
     title="Blackbox Trading Robot API",
@@ -345,5 +348,199 @@ async def get_calendar_stats() -> StatsResponse:
             if stats["date_range"][1]
             else None,
         )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
+
+
+# Scoring API response models
+class CurrencyScoreResponse(BaseModel):
+    """API response model for currency score."""
+
+    currency: str
+    score: float
+    reference_time: str
+    config: dict
+
+
+class PairBiasResponse(BaseModel):
+    """API response model for pair bias."""
+
+    base: str
+    quote: str
+    pair: str
+    base_score: float
+    quote_score: float
+    bias: float
+    reference_time: str
+
+
+class PairSignalResponse(BaseModel):
+    """API response model for pair signal."""
+
+    base: str
+    quote: str
+    pair: str
+    bias: float
+    signal: str
+    threshold: float
+    reference_time: str
+
+
+@app.get("/api/v1/scoring/currency/{currency}", response_model=CurrencyScoreResponse)
+async def get_currency_score(
+    currency: str,
+    half_life_hours: float = Query(
+        48.0, gt=0, description="Half-life for decay in hours"
+    ),
+    lookback_days: int = Query(7, gt=0, description="Days to look back for events"),
+) -> CurrencyScoreResponse:
+    """Get the fundamental score for a currency.
+
+    The score is calculated from economic events with temporal decay.
+    Positive scores indicate bullish sentiment, negative indicates bearish.
+
+    Args:
+        currency: Currency code (e.g., USD, EUR, GBP).
+        half_life_hours: Half-life for temporal decay.
+        lookback_days: Number of days to include in analysis.
+
+    Returns:
+        CurrencyScoreResponse with the calculated score.
+    """
+    try:
+        config = ScoringConfig(
+            half_life_hours=half_life_hours,
+            lookback_days=lookback_days,
+        )
+        reference_time = datetime.now()
+
+        with get_session() as session:
+            repository = EventRepository(session)
+            service = ScoringService(config, repository)
+            score = service.get_currency_score(currency.upper(), reference_time)
+
+        return CurrencyScoreResponse(
+            currency=currency.upper(),
+            score=round(score, 4),
+            reference_time=reference_time.isoformat(),
+            config={
+                "half_life_hours": half_life_hours,
+                "lookback_days": lookback_days,
+            },
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
+
+
+@app.get("/api/v1/scoring/pair/{base}/{quote}", response_model=PairBiasResponse)
+async def get_pair_bias(
+    base: str,
+    quote: str,
+    half_life_hours: float = Query(
+        48.0, gt=0, description="Half-life for decay in hours"
+    ),
+    lookback_days: int = Query(7, gt=0, description="Days to look back for events"),
+) -> PairBiasResponse:
+    """Get the directional bias for a currency pair.
+
+    Bias = base_currency_score - quote_currency_score.
+    Positive bias indicates bullish sentiment for the pair.
+
+    Args:
+        base: Base currency code (e.g., EUR in EURUSD).
+        quote: Quote currency code (e.g., USD in EURUSD).
+        half_life_hours: Half-life for temporal decay.
+        lookback_days: Number of days to include in analysis.
+
+    Returns:
+        PairBiasResponse with scores and bias.
+    """
+    try:
+        config = ScoringConfig(
+            half_life_hours=half_life_hours,
+            lookback_days=lookback_days,
+        )
+        reference_time = datetime.now()
+        base_upper = base.upper()
+        quote_upper = quote.upper()
+
+        with get_session() as session:
+            repository = EventRepository(session)
+            service = ScoringService(config, repository)
+            base_score = service.get_currency_score(base_upper, reference_time)
+            quote_score = service.get_currency_score(quote_upper, reference_time)
+            bias = service.get_pair_bias(base_upper, quote_upper, reference_time)
+
+        return PairBiasResponse(
+            base=base_upper,
+            quote=quote_upper,
+            pair=f"{base_upper}{quote_upper}",
+            base_score=round(base_score, 4),
+            quote_score=round(quote_score, 4),
+            bias=round(bias, 4),
+            reference_time=reference_time.isoformat(),
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
+
+
+@app.get("/api/v1/scoring/signal/{base}/{quote}", response_model=PairSignalResponse)
+async def get_pair_signal(
+    base: str,
+    quote: str,
+    half_life_hours: float = Query(
+        48.0, gt=0, description="Half-life for decay in hours"
+    ),
+    lookback_days: int = Query(7, gt=0, description="Days to look back for events"),
+    min_bias_threshold: float = Query(
+        1.0, ge=0, description="Minimum bias for directional signal"
+    ),
+) -> PairSignalResponse:
+    """Get a trading signal for a currency pair.
+
+    Returns BULLISH if bias > threshold, BEARISH if bias < -threshold,
+    otherwise NEUTRAL.
+
+    Args:
+        base: Base currency code (e.g., EUR in EURUSD).
+        quote: Quote currency code (e.g., USD in EURUSD).
+        half_life_hours: Half-life for temporal decay.
+        lookback_days: Number of days to include in analysis.
+        min_bias_threshold: Minimum absolute bias for directional signal.
+
+    Returns:
+        PairSignalResponse with signal and bias.
+    """
+    try:
+        config = ScoringConfig(
+            half_life_hours=half_life_hours,
+            lookback_days=lookback_days,
+            min_bias_threshold=min_bias_threshold,
+        )
+        reference_time = datetime.now()
+        base_upper = base.upper()
+        quote_upper = quote.upper()
+
+        with get_session() as session:
+            repository = EventRepository(session)
+            service = ScoringService(config, repository)
+            bias = service.get_pair_bias(base_upper, quote_upper, reference_time)
+            signal = service.get_bias_signal(base_upper, quote_upper, reference_time)
+
+        return PairSignalResponse(
+            base=base_upper,
+            quote=quote_upper,
+            pair=f"{base_upper}{quote_upper}",
+            bias=round(bias, 4),
+            signal=signal,
+            threshold=min_bias_threshold,
+            reference_time=reference_time.isoformat(),
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal error: {str(e)}")
