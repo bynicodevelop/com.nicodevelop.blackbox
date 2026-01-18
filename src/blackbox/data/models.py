@@ -23,6 +23,20 @@ class Impact(str, Enum):
     UNKNOWN = "unknown"
 
 
+class EventType(str, Enum):
+    """Type/category of an economic event for fundamental scoring."""
+
+    INTEREST_RATE = "interest_rate"
+    EMPLOYMENT = "employment"
+    INFLATION = "inflation"
+    GROWTH = "growth"
+    PMI = "pmi"
+    HOUSING = "housing"
+    SENTIMENT = "sentiment"
+    TRADE = "trade"
+    OTHER = "other"
+
+
 class EconomicEvent(BaseModel):
     """Represents a single economic event from the calendar.
 
@@ -35,6 +49,9 @@ class EconomicEvent(BaseModel):
         actual: The actual reported value (None if not yet released).
         forecast: The forecasted value (None if no forecast available).
         previous: The previous period's value (None if not available).
+        event_type: Category of the event for fundamental scoring.
+        direction: Impact direction (+1 = higher is bullish, -1 = higher is bearish).
+        weight: Importance weight from 1 (low) to 10 (high).
     """
 
     model_config = ConfigDict(frozen=True)
@@ -50,6 +67,9 @@ class EconomicEvent(BaseModel):
     actual_raw: str | None = Field(default=None, exclude=True)
     forecast_raw: str | None = Field(default=None, exclude=True)
     previous_raw: str | None = Field(default=None, exclude=True)
+    event_type: EventType = EventType.OTHER
+    direction: int = Field(default=1, ge=-1, le=1)
+    weight: int = Field(default=1, ge=1, le=10)
 
     @field_validator("actual", "forecast", "previous", mode="before")
     @classmethod

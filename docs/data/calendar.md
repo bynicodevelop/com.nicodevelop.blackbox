@@ -87,6 +87,9 @@ Représente un événement économique unique.
 | `actual` | `float \| None` | Valeur réelle publiée (normalisée) |
 | `forecast` | `float \| None` | Prévision (normalisée) |
 | `previous` | `float \| None` | Valeur précédente (normalisée) |
+| `event_type` | `EventType` | Catégorie de l'événement |
+| `direction` | `int` | Direction d'impact (+1 ou -1) |
+| `weight` | `int` | Poids d'importance (1-10) |
 
 ## Normalisation des valeurs
 
@@ -147,6 +150,35 @@ Enum des niveaux d'impact :
 | `Impact.HIGH` | Fort impact |
 | `Impact.HOLIDAY` | Jour férié |
 | `Impact.UNKNOWN` | Non défini |
+
+### EventType
+
+Enum des types d'événements économiques pour le scoring fondamental :
+
+| Valeur | Description |
+|--------|-------------|
+| `EventType.INTEREST_RATE` | Décisions de taux d'intérêt |
+| `EventType.EMPLOYMENT` | Données d'emploi (NFP, chômage) |
+| `EventType.INFLATION` | Indicateurs d'inflation (CPI, PPI) |
+| `EventType.GROWTH` | Croissance économique (GDP, ventes) |
+| `EventType.PMI` | Indices des directeurs d'achat |
+| `EventType.HOUSING` | Données immobilières |
+| `EventType.SENTIMENT` | Indicateurs de confiance |
+| `EventType.TRADE` | Balance commerciale |
+| `EventType.OTHER` | Autres événements |
+
+### Direction et Poids
+
+Les événements sont enrichis automatiquement avec des métadonnées pour le scoring :
+
+- **Direction** (`+1` ou `-1`) : Indique si une valeur plus élevée est haussière (+1) ou baissière (-1) pour la devise
+  - Exemple : NFP (+1) - plus d'emplois = bullish pour USD
+  - Exemple : Unemployment Rate (-1) - plus de chômage = bearish pour USD
+
+- **Poids** (1-10) : Importance de l'événement pour le marché
+  - 10 : Événements majeurs (NFP, CPI, décisions de taux)
+  - 5-7 : Événements importants (PMI, GDP préliminaire)
+  - 1-4 : Événements mineurs (housing, sentiment)
 
 ### CalendarDay
 
